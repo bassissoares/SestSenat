@@ -243,7 +243,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-05] Indicadores e gráficos de proporção
 
-- Status: `PENDENTE`.
+- Status: `CONCLUÍDO`.
 - Dependência: `PKG-03`.
 
 ### Escopo
@@ -265,6 +265,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - gráficos suportam drill-down e drill-up definidos;
 - rótulos continuam legíveis em telas menores;
 - não chamar respostas de envios sem definição formal adicional.
+
+### Evidências
+
+- seis KPIs e quatro visualizações ECharts coordenadas;
+- série mensal com zoom, ranking horizontal, treemap e distribuição por UF;
+- alternância entre quantidade e participação sobre o mesmo contexto;
+- clique em formulário ou UF integrado ao motor de filtros;
+- alternativa textual e teste automatizado de fechamento em 100%.
 
 ## [PKG-06] Rankings e tabelas coordenadas
 

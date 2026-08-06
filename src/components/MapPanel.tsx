@@ -6,7 +6,7 @@ import { loadGeography } from "../data/loadGeography";
 import { useFilters } from "../state/FilterContext";
 import type { GeographyData, StateFeatureProperties } from "../types/geography";
 
-type CityAggregate = { city: string; state: string; quantity: number; units: number; responsibles: number; latitude: number; longitude: number };
+type CityAggregate = { city: string; filterCity: string; state: string; quantity: number; units: number; responsibles: number; latitude: number; longitude: number };
 
 const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
@@ -31,11 +31,11 @@ export function MapPanel() {
   const cities = useMemo<CityAggregate[]>(() => {
     if (!geography) return [];
     const points = new Map(geography.cities.map((city) => [`${city.normalizedCity}|${city.state}`, city]));
-    const groups = new Map<string, { quantity: number; units: Set<string>; responsibles: Set<string> }>();
+    const groups = new Map<string, { filterCity: string; quantity: number; units: Set<string>; responsibles: Set<string> }>();
     filteredFacts.forEach((fact) => {
       if (!fact.city || !fact.state) return;
       const key = `${normalize(fact.city)}|${fact.state}`;
-      const group = groups.get(key) ?? { quantity: 0, units: new Set(), responsibles: new Set() };
+      const group = groups.get(key) ?? { filterCity: fact.city, quantity: 0, units: new Set(), responsibles: new Set() };
       group.quantity += fact.quantity;
       group.units.add(fact.unitSummary);
       group.responsibles.add(fact.responsibleName);
@@ -44,7 +44,7 @@ export function MapPanel() {
     return [...groups.entries()].flatMap(([key, group]) => {
       const point = points.get(key);
       if (!point) return [];
-      return [{ city: point.city, state: point.state, quantity: group.quantity, units: group.units.size, responsibles: group.responsibles.size, latitude: point.latitude, longitude: point.longitude }];
+      return [{ city: group.filterCity, filterCity: group.filterCity, state: point.state, quantity: group.quantity, units: group.units.size, responsibles: group.responsibles.size, latitude: point.latitude, longitude: point.longitude }];
     });
   }, [filteredFacts, geography]);
   const maxCity = Math.max(...cities.map((city) => city.quantity), 1);
@@ -70,7 +70,7 @@ export function MapPanel() {
               if (state) layer.on({ click: () => drillTo({ state: [state] }) });
             }} />
             {cities.map((city) => (
-              <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity))} pathOptions={{ color: "#003770", fillColor: "#ffd500", fillOpacity: .82, weight: 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.city] }) }}>
+              <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity))} pathOptions={{ color: "#003770", fillColor: "#ffd500", fillOpacity: .82, weight: 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.filterCity] }) }}>
                 <Popup><strong>{city.city}/{city.state}</strong><br />{city.quantity.toLocaleString("pt-BR")} respondidos<br />{city.units} unidades · {city.responsibles} responsáveis</Popup>
               </CircleMarker>
             ))}
@@ -78,7 +78,7 @@ export function MapPanel() {
           <div className="map-legend"><span><i className="legend-city" /> Cidade</span><span><i className="legend-state" /> Volume por UF</span><span>{cities.length} cidades localizadas</span></div>
           <details className="map-alternative">
             <summary>Consultar dados do mapa em lista</summary>
-            <ul>{cities.slice().sort((a, b) => b.quantity - a.quantity).map((city) => <li key={`${city.city}-list`}><button type="button" onClick={() => drillTo({ state: [city.state], city: [city.city] })}>{city.city}/{city.state}: {city.quantity.toLocaleString("pt-BR")}</button></li>)}</ul>
+            <ul>{cities.slice().sort((a, b) => b.quantity - a.quantity).map((city) => <li key={`${city.city}-list`}><button type="button" onClick={() => drillTo({ state: [city.state], city: [city.filterCity] })}>{city.city}/{city.state}: {city.quantity.toLocaleString("pt-BR")}</button></li>)}</ul>
           </details>
         </>
       )}

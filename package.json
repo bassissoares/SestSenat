@@ -13,6 +13,7 @@
   "dependencies": {
     "@fontsource/khand": "^5.2.8",
     "@fontsource/open-sans": "^5.2.7",
+    "echarts": "^6.0.0",
     "leaflet": "^1.9.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
