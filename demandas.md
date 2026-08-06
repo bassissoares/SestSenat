@@ -290,6 +290,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - unidade vinculada no ranking nominal de responsáveis;
 - ranking e filtro por tipo de unidade derivado do prefixo antes do número;
 - ranking de unidades, conselhos, cidades e formulários;
+- ordem dos agrupamentos: conselhos, tipos de unidade, unidades, cidades, responsáveis e formulários;
+- ranking de cidades identificado por cidade e UF;
 - posição, quantidade, participação e evolução no período;
 - pesquisa textual, ordenação, paginação e colunas configuráveis;
 - tabela mestre refletindo seleções originadas em mapa e gráficos;

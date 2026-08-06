@@ -4,7 +4,7 @@ import { useFilters } from "../state/FilterContext";
 import type { Fact, FilterKey } from "../types/dashboard";
 
 const dimensions: Array<{ key: FilterKey; label: string; item: string; render?: (fact: Fact) => string }> = [
-  { key: "responsibleName", label: "Responsáveis", item: "responsável" }, { key: "unitType", label: "Tipos de unidade", item: "tipo de unidade" }, { key: "unitSummary", label: "Unidades", item: "unidade" }, { key: "council", label: "Conselhos", item: "conselho" }, { key: "city", label: "Cidades", item: "cidade" }, { key: "formId", label: "Formulários", item: "formulário", render: (fact) => fact.formName },
+  { key: "council", label: "Conselhos", item: "conselho" }, { key: "unitType", label: "Tipos de unidade", item: "tipo de unidade" }, { key: "unitSummary", label: "Unidades", item: "unidade" }, { key: "city", label: "Cidades", item: "cidade" }, { key: "responsibleName", label: "Responsáveis", item: "responsável" }, { key: "formId", label: "Formulários", item: "formulário", render: (fact) => fact.formName },
 ];
 const number = new Intl.NumberFormat("pt-BR"); const percent = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 });
 
@@ -14,7 +14,7 @@ export function RankingPanel() {
   const visible = useMemo(() => { const term = search.toLocaleLowerCase("pt-BR"); return ranking.filter((row) => row.label.toLocaleLowerCase("pt-BR").includes(term) || (dimension.key === "responsibleName" && row.relatedUnits.some((unit) => unit.toLocaleLowerCase("pt-BR").includes(term)))).sort((a, b) => ascending ? a.quantity - b.quantity : b.quantity - a.quantity); }, [ranking, search, ascending, dimension.key]);
   const pageSize = 10; const pages = Math.max(1, Math.ceil(visible.length / pageSize)); const rows = visible.slice(page * pageSize, (page + 1) * pageSize);
   const selectDimension = (next: typeof dimensions[number]) => { setDimension(next); setSearch(""); setPage(0); };
-  const select = (row: (typeof ranking)[number]) => drillTo(dimension.key === "responsibleName" && row.relatedUnits.length === 1 ? { responsibleName: [row.key], unitSummary: row.relatedUnits } : { [dimension.key]: [row.key] });
+  const select = (row: (typeof ranking)[number]) => drillTo(dimension.key === "responsibleName" && row.relatedUnits.length === 1 ? { responsibleName: [row.key], unitSummary: row.relatedUnits } : dimension.key === "city" && row.relatedStates.length === 1 ? { city: [row.key], state: row.relatedStates } : { [dimension.key]: [row.key] });
   const exportVisible = () => { const blob = new Blob(["\uFEFF", rankingCsv(visible)], { type: "text/csv;charset=utf-8" }); const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `ranking-${dimension.key}.csv`; anchor.click(); URL.revokeObjectURL(url); };
   return <section className="ranking-section" id="secao-3" aria-labelledby="ranking-title">
     <div className="panel-heading"><div><p className="eyebrow">DESEMPENHO OPERACIONAL</p><h2 id="ranking-title">Rankings coordenados</h2></div><button className="export-button" onClick={exportVisible}>Exportar recorte CSV</button></div>

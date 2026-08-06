@@ -6,5 +6,6 @@ const facts: Fact[] = [{ ...base, year: 2025, responsibleName: "Ana", quantity: 
 describe("rankings", () => {
   it("calcula posição, participação e evolução", () => { const rows = buildRanking(facts, "responsibleName"); expect(rows[0]).toMatchObject({ label: "Ana", quantity: 25, evolution: .5 }); expect(rows[0].share).toBeCloseTo(25 / 30); });
   it("vincula todas as unidades ao responsável", () => expect(buildRanking(facts, "responsibleName")[0].relatedUnits).toEqual(["B 1", "B 2"]));
+  it("identifica a UF no ranking de cidades", () => expect(buildRanking(facts, "city")[0]).toMatchObject({ key: "Cidade", label: "Cidade/SP", relatedStates: ["SP"] }));
   it("exporta exatamente as linhas recebidas", () => expect(rankingCsv(buildRanking(facts, "responsibleName").slice(0, 1))).toContain('"Ana","B 1 | B 2","25"'));
 });
