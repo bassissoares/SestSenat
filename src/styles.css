@@ -96,6 +96,7 @@ h2 { font-size: 28px; }
 
 .filter-summary { display: flex; align-items: center; gap: 10px; margin: 28px 0 18px; }
 .filter-chip { padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.filter-periodicity { padding: 8px 12px; color: #315b70; background: #e5f0f2; border: 1px solid #c9dde1; border-radius: 999px; font-size: 12px; font-weight: 700; }
 .filter-chip-active { color: #fff; background: var(--brand-navy); }
 .filter-summary button { margin-left: auto; padding: 8px 12px; color: #8a9baa; background: transparent; border: 0; }
 .filter-summary .filter-chip-selected { display: flex; gap: 8px; align-items: center; margin-left: 0; color: var(--brand-navy); background: #dceefa; border: 1px solid #b9d8ec; cursor: pointer; }
@@ -109,6 +110,7 @@ h2 { font-size: 28px; }
 .filter-grid label span { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
 .filter-grid select { width: 100%; min-height: 40px; padding: 7px 10px; color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: 8px; }
 .filter-grid select:focus { outline: 3px solid rgb(32 170 238 / 25%); border-color: var(--brand-sky); }
+.periodicity-control { padding: 9px; background: #eef6f7; border-radius: 9px; }
 
 .state-panel { margin-top: 28px; padding: 28px; color: var(--brand-navy); background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
 .state-panel-error { display: grid; gap: 6px; color: #8b2f20; border-left: 5px solid #cc3c14; }

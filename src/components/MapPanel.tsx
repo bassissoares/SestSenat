@@ -9,7 +9,7 @@ import type { GeographyData, StateFeatureProperties } from "../types/geography";
 type UnitTypeTotal = { type: string; quantity: number };
 type CityAggregate = { city: string; filterCity: string; state: string; quantity: number; units: number; responsibles: number; unitTypes: UnitTypeTotal[]; dominantType: string; latitude: number; longitude: number };
 
-const unitTypeColors: Record<string, string> = { A: "#ffd500", B: "#20aaee", C: "#068e3a", D: "#6f42c1", DN: "#f28c28", CN: "#e94f64", "Não identificado": "#8796a5" };
+const unitTypeColors: Record<string, string> = { A: "#234f74", B: "#3f7394", C: "#5b8fa3", D: "#72a091", CN: "#a96f7a", DN: "#c18b5b", "Não identificado": "#8a98a4" };
 const colorForType = (type: string) => unitTypeColors[type] ?? "#8796a5";
 
 const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();

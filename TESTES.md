@@ -49,6 +49,9 @@
 - chips identificam todos os filtros ativos e podem ser removidos individualmente;
 - `Limpar filtros` restaura totais e seleções da visão geral;
 - alternar visualização não perde o contexto atual;
+- alternar entre mensal, bimestral, trimestral, semestral e anual preserva o total filtrado;
+- série, heatmap, evolução dos rankings e curva acumulada usam a mesma periodicidade;
+- curva acumulada é monotônica e termina no total de cada agrupamento comparado;
 - estado vazio indica qual combinação de filtros não possui dados;
 - teclado e leitor de tela conseguem acionar filtros e consultar alternativas
   textuais aos gráficos.

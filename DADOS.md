@@ -136,6 +136,13 @@ ordem fixa:
 Esse baseline serve para reconciliar o arquivo atual, mas não pode ser usado
 como limite fixo. Novas cargas podem adicionar anos, meses, dimensões e volume.
 
+### Agregação temporal
+
+- a periodicidade apenas agrupa os fatos existentes; não altera o total do contexto filtrado;
+- bimestres, trimestres e semestres seguem períodos civis iniciados em janeiro;
+- a curva acumulada soma cronologicamente os períodos e deve terminar no total do agrupamento;
+- o drill de um período agregado aplica todos os meses que compõem aquele intervalo.
+
 ### Enriquecimento geográfico
 
 - extrair município e UF de `unidade_detalhe`;

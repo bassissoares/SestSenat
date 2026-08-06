@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { availableValues, decodeFilters, encodeFilters, filterFacts } from "../analytics/filters";
-import type { Dimensions, Fact, FilterKey, FilterState } from "../types/dashboard";
+import type { Dimensions, Fact, FilterKey, FilterState, Periodicity } from "../types/dashboard";
 
 type FilterContextValue = {
   facts: Fact[];
@@ -9,6 +9,8 @@ type FilterContextValue = {
   dimensions: Dimensions;
   filters: FilterState;
   historyDepth: number;
+  periodicity: Periodicity;
+  setPeriodicity: (value: Periodicity) => void;
   optionsFor: (key: FilterKey) => string[];
   setSingleFilter: (key: FilterKey, value: string) => void;
   drillTo: (updates: FilterState) => void;
@@ -21,13 +23,16 @@ const FilterContext = createContext<FilterContextValue | null>(null);
 
 export function FilterProvider({ facts, dimensions, children }: { facts: Fact[]; dimensions: Dimensions; children: React.ReactNode }) {
   const [filters, setFilters] = useState<FilterState>(() => decodeFilters(window.location.search));
+  const [periodicity, setPeriodicity] = useState<Periodicity>(() => { const value = Number(new URLSearchParams(window.location.search).get("periodicity")); return ([1, 2, 3, 6, 12] as number[]).includes(value) ? value as Periodicity : 1; });
   const [history, setHistory] = useState<FilterState[]>([]);
 
   useEffect(() => {
-    const query = encodeFilters(filters);
+    const params = new URLSearchParams(encodeFilters(filters));
+    if (periodicity !== 1) params.set("periodicity", String(periodicity));
+    const query = params.toString();
     const url = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
     window.history.replaceState(null, "", url);
-  }, [filters]);
+  }, [filters, periodicity]);
 
   const change = useCallback((next: FilterState) => {
     setFilters((current) => {
@@ -68,13 +73,15 @@ export function FilterProvider({ facts, dimensions, children }: { facts: Fact[];
     filters,
     filteredFacts: filterFacts(facts, filters),
     historyDepth: history.length,
+    periodicity,
+    setPeriodicity,
     optionsFor: (key) => availableValues(facts, filters, key),
     setSingleFilter,
     drillTo,
     removeFilter,
     clearFilters,
     drillUp,
-  }), [facts, dimensions, filters, history.length, setSingleFilter, drillTo, removeFilter, clearFilters, drillUp]);
+  }), [facts, dimensions, filters, history.length, periodicity, setSingleFilter, drillTo, removeFilter, clearFilters, drillUp]);
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;
 }

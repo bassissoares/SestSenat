@@ -249,12 +249,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 ### Escopo
 
 - cards de total, anos, formulários, conselhos, unidades e responsáveis;
-- série temporal anual/mensal com comparação e zoom;
+- periodicidade global mensal, bimestral, trimestral, semestral ou anual;
+- série temporal com comparação e zoom na periodicidade escolhida;
 - barras 100% empilhadas para proporção por formulário e território;
 - ranking visual horizontal com participação acumulada;
 - treemap para composição dos formulários respondidos;
 - heatmap temporal alternável por tipo de unidade, unidade, conselho, cidade,
   formulário e responsável;
+- curva de crescimento acumulado comparando os cinco principais agrupamentos;
 - alternância entre quantidade absoluta e participação percentual;
 - destaque visual e animações curtas sem prejudicar leitura;
 - tooltips ricos e acessíveis;
@@ -272,7 +274,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 ### Evidências
 
 - seis KPIs e quatro visualizações ECharts coordenadas;
-- série mensal com zoom, ranking horizontal, treemap e distribuição por UF;
+- série temporal com zoom, curva acumulada comparativa, heatmap, ranking horizontal, treemap e distribuição por UF;
 - alternância entre quantidade e participação sobre o mesmo contexto;
 - clique em formulário ou UF integrado ao motor de filtros;
 - alternativa textual e teste automatizado de fechamento em 100%.

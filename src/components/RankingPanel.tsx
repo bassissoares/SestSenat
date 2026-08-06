@@ -9,8 +9,8 @@ const dimensions: Array<{ key: FilterKey; label: string; item: string; render?: 
 const number = new Intl.NumberFormat("pt-BR"); const percent = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 1 });
 
 export function RankingPanel() {
-  const { filteredFacts, drillTo } = useFilters(); const [dimension, setDimension] = useState(dimensions[0]); const [search, setSearch] = useState(""); const [page, setPage] = useState(0); const [ascending, setAscending] = useState(false);
-  const ranking = useMemo(() => buildRanking(filteredFacts, dimension.key, dimension.render), [filteredFacts, dimension]);
+  const { filteredFacts, drillTo, periodicity } = useFilters(); const [dimension, setDimension] = useState(dimensions[0]); const [search, setSearch] = useState(""); const [page, setPage] = useState(0); const [ascending, setAscending] = useState(false);
+  const ranking = useMemo(() => buildRanking(filteredFacts, dimension.key, dimension.render, periodicity), [filteredFacts, dimension, periodicity]);
   const visible = useMemo(() => { const term = search.toLocaleLowerCase("pt-BR"); return ranking.filter((row) => row.label.toLocaleLowerCase("pt-BR").includes(term) || (dimension.key === "responsibleName" && row.relatedUnits.some((unit) => unit.toLocaleLowerCase("pt-BR").includes(term)))).sort((a, b) => ascending ? a.quantity - b.quantity : b.quantity - a.quantity); }, [ranking, search, ascending, dimension.key]);
   const pageSize = 10; const pages = Math.max(1, Math.ceil(visible.length / pageSize)); const rows = visible.slice(page * pageSize, (page + 1) * pageSize);
   const selectDimension = (next: typeof dimensions[number]) => { setDimension(next); setSearch(""); setPage(0); };
