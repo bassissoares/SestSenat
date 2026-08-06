@@ -276,7 +276,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-06] Rankings e tabelas coordenadas
 
-- Status: `PENDENTE`.
+- Status: `CONCLUÍDO`.
 - Dependência: `PKG-03`.
 
 ### Escopo
@@ -297,6 +297,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - tabela não renderiza milhares de linhas simultaneamente;
 - interação com linhas mantém contexto e breadcrumb;
 - exportação corresponde exatamente ao filtro visível.
+
+### Evidências
+
+- rankings alternáveis de responsáveis, unidades, conselhos, cidades e formulários;
+- posição, quantidade, participação e evolução entre primeiro e último ano;
+- pesquisa, ordenação e paginação de dez registros;
+- ação de linha integrada ao filtro global e breadcrumb;
+- exportação CSV limitada ao recorte pesquisado e autorizado.
 
 ## [PKG-07] Desempenho, acessibilidade e qualidade analítica
 

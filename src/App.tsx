@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FilterBar } from "./components/FilterBar";
 import { MapPanel } from "./components/MapPanel";
 import { AnalyticsPanel } from "./components/AnalyticsPanel";
+import { RankingPanel } from "./components/RankingPanel";
 import { FilterProvider, useFilters } from "./state/FilterContext";
 import { loadDashboardData } from "./data/loadDashboardData";
 import type { DashboardData } from "./types/dashboard";
@@ -19,6 +20,7 @@ function Dashboard() {
       <div className="context-banner"><strong>{total.toLocaleString("pt-BR")}</strong> respondidos em {filteredFacts.length.toLocaleString("pt-BR")} agrupamentos no recorte atual.</div>
       <MapPanel />
       <AnalyticsPanel />
+      <RankingPanel />
     </>
   );
 }
