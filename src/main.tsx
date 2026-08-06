@@ -1,9 +1,9 @@
-import "@fontsource/khand/500.css";
-import "@fontsource/khand/600.css";
-import "@fontsource/khand/700.css";
-import "@fontsource/open-sans/400.css";
-import "@fontsource/open-sans/600.css";
-import "@fontsource/open-sans/700.css";
+import "@fontsource/khand/latin-500.css";
+import "@fontsource/khand/latin-600.css";
+import "@fontsource/khand/latin-700.css";
+import "@fontsource/open-sans/latin-400.css";
+import "@fontsource/open-sans/latin-600.css";
+import "@fontsource/open-sans/latin-700.css";
 import "leaflet/dist/leaflet.css";
 import React from "react";
 import ReactDOM from "react-dom/client";

@@ -65,6 +65,10 @@ if (Test-Path -LiteralPath (Join-Path $PSScriptRoot 'package.json')) {
         if ($LASTEXITCODE -ne 0) {
             throw 'Build do frontend falhou.'
         }
+        & $python.Source scripts/check_build.py
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Limites do artefato falharam.'
+        }
     }
     finally {
         Pop-Location

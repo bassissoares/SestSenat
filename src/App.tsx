@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 import { FilterBar } from "./components/FilterBar";
-import { MapPanel } from "./components/MapPanel";
-import { AnalyticsPanel } from "./components/AnalyticsPanel";
-import { RankingPanel } from "./components/RankingPanel";
 import { FilterProvider, useFilters } from "./state/FilterContext";
 import { loadDashboardData } from "./data/loadDashboardData";
 import type { DashboardData } from "./types/dashboard";
 
 const packages = ["Visão geral", "Mapa por cidade", "Proporções", "Rankings"];
+const MapPanel = lazy(() => import("./components/MapPanel").then((module) => ({ default: module.MapPanel })));
+const AnalyticsPanel = lazy(() => import("./components/AnalyticsPanel").then((module) => ({ default: module.AnalyticsPanel })));
+const RankingPanel = lazy(() => import("./components/RankingPanel").then((module) => ({ default: module.RankingPanel })));
 
 function Dashboard() {
   const { filteredFacts } = useFilters();
@@ -18,9 +18,11 @@ function Dashboard() {
     <>
       <FilterBar />
       <div className="context-banner"><strong>{total.toLocaleString("pt-BR")}</strong> respondidos em {filteredFacts.length.toLocaleString("pt-BR")} agrupamentos no recorte atual.</div>
-      <MapPanel />
-      <AnalyticsPanel />
-      <RankingPanel />
+      <Suspense fallback={<section className="state-panel" role="status">Preparando visualizações…</section>}>
+        <MapPanel />
+        <AnalyticsPanel />
+        <RankingPanel />
+      </Suspense>
     </>
   );
 }

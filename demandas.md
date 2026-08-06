@@ -308,7 +308,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-07] Desempenho, acessibilidade e qualidade analítica
 
-- Status: `PENDENTE`.
+- Status: `CONCLUÍDO`.
 - Dependências: `PKG-04`, `PKG-05` e `PKG-06`.
 
 ### Escopo
@@ -327,6 +327,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - nenhum componente bloqueia a thread principal perceptivelmente;
 - todas as informações essenciais possuem alternativa não visual;
 - checks, testes e build de produção aprovados.
+
+### Evidências
+
+- mapa, gráficos e rankings divididos em chunks carregados sob demanda;
+- fontes limitadas ao subconjunto latino, sem famílias não utilizadas;
+- alternativas textuais para mapa e gráficos e tabela semântica paginada;
+- layout responsivo e redução de movimento preservados;
+- limite automatizado para JavaScript, CSS, JSON e GeoJSON no `check.ps1`.
 
 ## [PKG-08] GitHub Pages, homologação e publicação
 
