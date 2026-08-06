@@ -83,19 +83,19 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 ## [MOD-01] Formulários respondidos — visão geral interativa
 
 - Status: `EM ANÁLISE`.
-- Fonte: `formularios_respondidos.csv`, snapshot de 06/08/2026.
+- Fonte: `formularios_respondidos.csv`, carga completa processada em 06/08/2026.
 - Objetivo: apresentar, sem filtros obrigatórios, o panorama de formulários
   respondidos e permitir exploração coordenada por tempo, território,
   formulário, unidade e responsável.
 
 ### Baseline da fonte
 
-- período atual: 2025 e 2026;
-- 2.459 agrupamentos;
-- 507.741 formulários respondidos;
-- 29 formulários, 18 conselhos, 140 unidades e 350 responsáveis;
+- período publicado: 2021-01 a 2026-08, com registros anteriores a 2021 descartados;
+- 6.759 agrupamentos;
+- 1.271.468 formulários respondidos;
+- 91 formulários, 19 conselhos, 174 unidades e 804 responsáveis;
 - nomes de responsáveis autorizados para apresentação pública;
-- detalhamento de unidade ausente em 9 agrupamentos.
+- localização ausente ou não interpretada em 104 agrupamentos.
 
 ### Hierarquias de drill-down e drill-up
 
@@ -125,13 +125,13 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - manter o último snapshot aprovado quando a nova carga falhar;
 - impedir que o CSV bruto integre a pasta pública ou o artefato do site;
 - preservar nomes autorizados e omitir `responsavel_id` da interface;
-- reconciliar 507.741 respostas, 335.072 em 2025 e 172.669 em 2026.
+- aplicar corte mínimo de 2021 e reconciliar 1.271.468 respostas publicadas.
 
 ### Critérios de aceite
 
-- nenhuma linha válida perdida;
+- nenhuma linha válida a partir de 2021 perdida;
 - totais por ano e total geral reconciliados;
-- nove ausências geográficas sinalizadas sem exclusão dos totais;
+- 104 ausências ou detalhes geográficos não interpretados sinalizados sem exclusão dos totais;
 - nova carga completa substitui a anterior sem somar ou duplicar histórico;
 - inclusão de novo ano não exige alteração de código;
 - falha de validação não altera os JSON públicos vigentes;
@@ -140,11 +140,12 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ### Evidências
 
-- snapshot `b7ef33b912a56c3c`: 2.459 agrupamentos e 507.741 respostas;
-- reconciliação: 335.072 em 2025 e 172.669 em 2026;
-- 18 alertas geográficos preservados no relatório de qualidade;
-- 4 testes automatizados cobrindo cabeçalho, total, rejeição e rollback;
-- comando: `python scripts/import_forms.py --input <arquivo.csv>`;
+- snapshot `83d6699f7b66eb6c`: 6.759 agrupamentos e 1.271.468 respostas publicadas;
+- reconciliação anual: 447 em 2021, 117.303 em 2022, 296.403 em 2023,
+  349.245 em 2024, 335.072 em 2025 e 172.998 em 2026;
+- 18 agrupamentos anteriores a 2021 descartados e auditados no manifesto;
+- 104 alertas geográficos preservados no relatório de qualidade;
+- comando: `python scripts/import_forms.py --input <arquivo.csv> --min-year 2021`;
 - checks: `./check.ps1` aprovado.
 
 ## [PKG-02] Design system SEST SENAT e shell analítico

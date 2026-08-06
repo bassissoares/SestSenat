@@ -98,7 +98,7 @@ Para cada envio devem ser respondidas estas perguntas:
 
 ## Contrato MOD-01 — Formulários respondidos
 
-Fonte inicial: `formularios_respondidos.csv`, snapshot de 06/08/2026.
+Fonte atual: `formularios_respondidos.csv`, carga completa processada em 06/08/2026.
 
 Granularidade: uma linha por ano, mês, formulário, conselho, unidade e
 responsável, contendo a quantidade agregada de formulários respondidos.
@@ -121,20 +121,29 @@ ordem fixa:
 
 ### Baseline do snapshot
 
-- 2.459 agrupamentos;
-- 507.741 formulários respondidos;
+- 6.759 agrupamentos publicados;
+- 1.271.468 formulários respondidos;
+- corte temporal publicado: 2021-01 a 2026-08;
+- 18 agrupamentos anteriores a 2021 descartados por decisão funcional;
+- 447 em 2021;
+- 117.303 em 2022;
+- 296.403 em 2023;
+- 349.245 em 2024;
 - 335.072 em 2025;
-- 172.669 em 2026;
-- 29 formulários;
-- 18 conselhos;
-- 140 unidades resumidas;
-- 350 responsáveis;
-- 9 agrupamentos sem detalhe completo da unidade;
+- 172.998 em 2026;
+- 91 formulários;
+- 19 conselhos;
+- 174 unidades resumidas;
+- 804 responsáveis;
+- 104 agrupamentos com localização ausente ou não interpretada;
+- 165 cidades relacionadas à referência geográfica e nenhuma cidade pendente;
 - nenhuma duplicidade na chave das nove dimensões;
 - nenhuma quantidade zero, negativa ou fracionária.
 
 Esse baseline serve para reconciliar o arquivo atual, mas não pode ser usado
 como limite fixo. Novas cargas podem adicionar anos, meses, dimensões e volume.
+O corte mínimo de 2021 deve ser aplicado explicitamente pelo pipeline e auditado
+em `discardedRows` e `minimumPublishedYear` no manifesto.
 
 ### Agregação temporal
 

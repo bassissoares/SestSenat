@@ -29,6 +29,7 @@ USER_AGENT = "SestSenatDashboard/1.0 (dados geograficos publicos)"
 # Alguns nomes do InspectApp identificam bairros ou nomes operacionais de unidades.
 # O valor de destino é sempre um município oficial do IBGE na mesma UF.
 MUNICIPALITY_ALIASES = {
+    ("BELO HORIZONTE (JARDIM VITORIA)", "MG"): "BELO HORIZONTE",
     ("BELO HORIZONTE (SERRA VERDE)", "MG"): "BELO HORIZONTE",
     ("FERNAO DIAS", "SP"): "SAO PAULO",
     ("MANAUS (JORGE TEIXEIRA)", "AM"): "MANAUS",

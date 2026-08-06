@@ -51,6 +51,7 @@ class ImportValidationError(ValueError):
 class ImportResult:
     input_rows: int
     published_rows: int
+    discarded_rows: int
     total: int
     years: tuple[int, ...]
     warnings: tuple[str, ...]
@@ -223,11 +224,15 @@ def unique_sorted(facts: list[dict[str, object]], field: str) -> list[object]:
     return sorted({fact[field] for fact in facts}, key=lambda value: str(value))
 
 
-def build_outputs(input_path: Path) -> tuple[dict[str, object], ImportResult]:
+def build_outputs(input_path: Path, min_year: int | None = None) -> tuple[dict[str, object], ImportResult]:
     source_bytes = input_path.read_bytes()
     source_hash = hashlib.sha256(source_bytes).hexdigest()
     rows, had_header = read_rows(input_path)
-    facts, warnings = transform_rows(rows)
+    all_facts, warnings = transform_rows(rows)
+    facts = [fact for fact in all_facts if min_year is None or int(fact["year"]) >= min_year]
+    discarded_rows = len(all_facts) - len(facts)
+    if not facts:
+        raise ImportValidationError("Nenhum agrupamento permaneceu após o corte temporal.")
     years = sorted({int(fact["year"]) for fact in facts})
     months = sorted({int(fact["month"]) for fact in facts})
     totals_by_year = Counter()
@@ -243,13 +248,14 @@ def build_outputs(input_path: Path) -> tuple[dict[str, object], ImportResult]:
         "module": "formularios-respondidos",
         "datasetVersion": source_hash[:16],
         "generatedAt": generated_at,
-        "periodStart": f"{years[0]}-{min(months):02d}" if years else None,
-        "periodEnd": f"{years[-1]}-{max(months):02d}" if years else None,
+        "periodStart": min(f"{fact['year']}-{int(fact['month']):02d}" for fact in facts),
+        "periodEnd": max(f"{fact['year']}-{int(fact['month']):02d}" for fact in facts),
         "sourceLabel": "Formulários respondidos — InspectApp",
         "sourceSha256": source_hash,
         "inputRows": len(rows),
         "publishedRows": len(facts),
-        "discardedRows": 0,
+        "discardedRows": discarded_rows,
+        "minimumPublishedYear": min_year,
         "warnings": len(warnings),
         "hadHeader": had_header,
         "totalAnswered": total,
@@ -276,7 +282,7 @@ def build_outputs(input_path: Path) -> tuple[dict[str, object], ImportResult]:
     }
     return (
         {"manifest.json": manifest, "facts.json": facts, "dimensions.json": dimensions, "quality.json": quality},
-        ImportResult(len(rows), len(facts), total, tuple(years), tuple(warnings), source_hash),
+        ImportResult(len(rows), len(facts), discarded_rows, total, tuple(years), tuple(warnings), source_hash),
     )
 
 
@@ -308,10 +314,10 @@ def write_outputs_atomically(outputs: dict[str, object], output_dir: Path) -> No
             shutil.rmtree(temp_dir)
 
 
-def import_snapshot(input_path: Path, output_dir: Path) -> ImportResult:
+def import_snapshot(input_path: Path, output_dir: Path, min_year: int | None = None) -> ImportResult:
     if not input_path.is_file():
         raise ImportValidationError(f"Arquivo não encontrado: {input_path}")
-    outputs, result = build_outputs(input_path)
+    outputs, result = build_outputs(input_path, min_year)
     write_outputs_atomically(outputs, output_dir)
     return result
 
@@ -325,15 +331,17 @@ def main() -> int:
         default=Path("public/data/formularios-respondidos"),
         help="Diretório de saída pública.",
     )
+    parser.add_argument("--min-year", type=int, help="Descarta agrupamentos anteriores ao ano informado.")
     args = parser.parse_args()
     try:
-        result = import_snapshot(args.input.resolve(), args.output.resolve())
+        result = import_snapshot(args.input.resolve(), args.output.resolve(), args.min_year)
     except ImportValidationError as exc:
         print(f"ERRO: {exc}", file=sys.stderr)
         return 2
     print(
         f"OK: {result.published_rows} agrupamentos, {result.total} respostas, "
-        f"anos {', '.join(map(str, result.years))}, {len(result.warnings)} alertas."
+        f"anos {', '.join(map(str, result.years))}, {result.discarded_rows} descartados, "
+        f"{len(result.warnings)} alertas."
     )
     return 0
 

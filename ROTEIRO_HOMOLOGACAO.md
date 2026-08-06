@@ -3,14 +3,14 @@
 ## Identificação
 
 - Módulo: Formulários respondidos.
-- Snapshot: `b7ef33b912a56c3c`.
-- Período: janeiro/2025 a dezembro/2026.
-- Baseline: 2.459 agrupamentos e 507.741 respostas.
+- Snapshot: `83d6699f7b66eb6c`.
+- Período publicado: janeiro/2021 a agosto/2026.
+- Baseline: 6.759 agrupamentos e 1.271.468 respostas.
 
 ## Sequência principal
 
-1. Abrir a URL pública e confirmar 507.741 respostas, 29 formulários, 18 conselhos, 140 unidades e 350 responsáveis.
-2. Confirmar mapa nacional sem filtro obrigatório e 138 cidades.
+1. Abrir a URL pública e confirmar 1.271.468 respostas, 91 formulários, 19 conselhos, 174 unidades e 804 responsáveis ao incluir o período completo.
+2. Confirmar mapa nacional sem filtro obrigatório e 165 cidades localizadas.
 3. Selecionar cidade e confirmar chips e atualização de todos os componentes.
 4. Usar `Voltar nível` e confirmar o contexto anterior.
 5. Selecionar `Participação` e confirmar composição total de 100%.
