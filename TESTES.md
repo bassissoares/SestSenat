@@ -71,6 +71,8 @@
 - registros sem localização continuam contabilizados nos totais;
 - seleção e drill-down do mapa reconciliam com tabela e gráficos.
 - cor da bolha corresponde ao tipo predominante e o hover exibe dados e composição por tipo.
+- intensidade azul de cada UF acompanha proporcionalmente o volume do recorte filtrado.
+- clique na legenda destaca o tipo selecionado, reduz a opacidade dos demais e o segundo clique restaura o mapa.
 
 ## Publicação
 

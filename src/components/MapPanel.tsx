@@ -11,6 +11,7 @@ type CityAggregate = { city: string; filterCity: string; state: string; quantity
 
 const unitTypeColors: Record<string, string> = { A: "#234f74", B: "#3f7394", C: "#5b8fa3", D: "#72a091", CN: "#a96f7a", DN: "#c18b5b", "Não identificado": "#8a98a4" };
 const colorForType = (type: string) => unitTypeColors[type] ?? "#8796a5";
+const stateFillColor = (quantity: number, maximum: number) => quantity ? `hsl(204 70% ${Math.round(88 - 55 * (quantity / maximum))}%)` : "#e8eef2";
 
 const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
@@ -18,6 +19,7 @@ export function MapPanel() {
   const { filteredFacts, drillTo } = useFilters();
   const [geography, setGeography] = useState<GeographyData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [highlightedUnitType, setHighlightedUnitType] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -57,8 +59,7 @@ export function MapPanel() {
 
   const stateStyle = (feature?: GeoJSON.Feature<GeoJSON.Geometry, StateFeatureProperties>): PathOptions => {
     const total = stateTotals.get(feature?.properties.state ?? "") ?? 0;
-    const intensity = total / maxState;
-    return { color: "#ffffff", weight: 1.3, fillColor: total ? `rgb(${Math.round(32 - 10 * intensity)}, ${Math.round(170 - 60 * intensity)}, ${Math.round(238 - 20 * intensity)})` : "#dce7ef", fillOpacity: total ? 0.72 : 0.35 };
+    return { color: "#ffffff", weight: 1.3, fillColor: stateFillColor(total, maxState), fillOpacity: total ? 0.82 : 0.4 };
   };
 
   return (
@@ -76,12 +77,12 @@ export function MapPanel() {
               if (state) layer.on({ click: () => drillTo({ state: [state] }) });
             }} />
             {cities.map((city) => (
-              <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity))} pathOptions={{ color: "#003770", fillColor: colorForType(city.dominantType), fillOpacity: .86, weight: 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.filterCity] }) }}>
+              <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity)) + (highlightedUnitType === city.dominantType ? 2 : 0)} pathOptions={{ color: "#003770", fillColor: colorForType(city.dominantType), fillOpacity: !highlightedUnitType || highlightedUnitType === city.dominantType ? .9 : .12, opacity: !highlightedUnitType || highlightedUnitType === city.dominantType ? 1 : .18, weight: highlightedUnitType === city.dominantType ? 3 : 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.filterCity] }) }}>
                 <Tooltip sticky direction="top" opacity={.96} className="map-tooltip"><strong>{city.city}/{city.state}</strong><br /><span>Tipo predominante: <b>{city.dominantType}</b></span><br />{city.quantity.toLocaleString("pt-BR")} respondidos<br />{city.units} unidades · {city.responsibles} responsáveis<br /><span>Composição: {city.unitTypes.map((item) => `${item.type} ${item.quantity.toLocaleString("pt-BR")}`).join(" · ")}</span></Tooltip>
               </CircleMarker>
             ))}
           </MapContainer>
-          <div className="map-legend"><span><i className="legend-state" /> Volume por UF</span>{Object.entries(unitTypeColors).map(([type, color]) => <span key={type}><i className="legend-city" style={{ backgroundColor: color }} /> Tipo {type}</span>)}<span>{cities.length} cidades localizadas</span></div>
+          <div className="map-legend"><span className="state-scale"><i className="legend-state" /> Volume por UF <small>menor</small><i className="legend-state-gradient" /><small>maior</small></span>{Object.entries(unitTypeColors).map(([type, color]) => <button type="button" className={highlightedUnitType === type ? "active" : highlightedUnitType ? "muted" : ""} aria-pressed={highlightedUnitType === type} key={type} onClick={() => setHighlightedUnitType((current) => current === type ? null : type)} title={`Destacar cidades do tipo ${type}`}><i className="legend-city" style={{ backgroundColor: color }} /> Tipo {type}</button>)}<span className="map-city-count">{cities.length} cidades localizadas</span></div>
           <details className="map-alternative">
             <summary>Consultar dados do mapa em lista</summary>
             <ul>{cities.slice().sort((a, b) => b.quantity - a.quantity).map((city) => <li key={`${city.city}-list`}><button type="button" onClick={() => drillTo({ state: [city.state], city: [city.filterCity] })}>{city.city}/{city.state}: {city.quantity.toLocaleString("pt-BR")}</button></li>)}</ul>

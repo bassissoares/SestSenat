@@ -220,6 +220,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - gerar centroide municipal e GeoJSON otimizado;
 - exibir mapa nacional já na visão geral;
 - combinar mapa coroplético por UF com bolhas/cluster por cidade;
+- colorir UFs em escala contínua do azul claro ao escuro, proporcional ao volume filtrado;
+- permitir destaque reversível dos tipos de unidade pela legenda, sem alterar o filtro analítico;
 - representar quantidade e proporção de formulários respondidos;
 - tooltip com cidade, UF, unidades, responsáveis e participação;
 - drill Brasil → UF/conselho → cidade → unidade;

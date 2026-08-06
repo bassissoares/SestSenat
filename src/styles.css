@@ -122,11 +122,17 @@ h2 { font-size: 28px; }
 .interactive-map { width: 100%; height: min(58vh, 620px); min-height: 430px; border-radius: 16px; background: #dceaf3; z-index: 0; }
 .map-fallback { min-height: 430px; display: grid; place-items: center; padding: 24px; color: var(--text-muted); background: var(--surface-soft); border-radius: 16px; text-align: center; }
 .map-legend { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-top: 12px; color: var(--text-muted); font-size: 11px; }
-.map-legend span { display: flex; gap: 6px; align-items: center; }
-.map-legend span:last-child { margin-left: auto; }
+.map-legend span, .map-legend button { display: flex; gap: 6px; align-items: center; }
+.map-legend button { padding: 5px 8px; color: var(--text-muted); background: #fff; border: 1px solid transparent; border-radius: 999px; cursor: pointer; transition: opacity .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.map-legend button:hover, .map-legend button:focus-visible { border-color: #8bb5c8; outline: none; }
+.map-legend button.active { color: var(--brand-navy); border-color: #5b8fa3; box-shadow: 0 0 0 3px rgb(91 143 163 / 16%); font-weight: 700; }
+.map-legend button.muted { opacity: .38; }
+.map-city-count { margin-left: auto; }
 .map-legend i { width: 13px; height: 13px; display: inline-block; }
 .legend-city { background: var(--brand-yellow); border: 2px solid var(--brand-navy); border-radius: 50%; }
-.legend-state { background: var(--brand-sky); border: 1px solid #fff; }
+.legend-state { background: #8bc8e8; border: 1px solid #fff; }
+.legend-state-gradient { width: 72px !important; height: 9px !important; background: linear-gradient(90deg, hsl(204 70% 88%), hsl(204 70% 33%)); border-radius: 999px; }
+.state-scale small { font-size: 9px; }
 .map-alternative { margin-top: 12px; color: var(--brand-navy); font-size: 12px; }
 .map-alternative summary { cursor: pointer; font-weight: 700; }
 .map-alternative ul { max-height: 220px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; overflow: auto; padding: 8px 0; list-style: none; }
