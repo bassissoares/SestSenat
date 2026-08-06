@@ -338,7 +338,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-08] GitHub Pages, homologação e publicação
 
-- Status: `PENDENTE`.
+- Status: `EM HOMOLOGAÇÃO`.
 - Dependência: `PKG-07`.
 
 ### Escopo
@@ -360,6 +360,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - visão geral, mapa e interações funcionam na URL publicada;
 - console sem erro relevante;
 - homologação registrada com snapshot e totais da fonte.
+
+### Evidências preparadas
+
+- workflow único de checks, build e deploy do GitHub Pages;
+- operação documentada para importar, validar, substituir e reverter dados;
+- roteiro funcional com fluxo principal, casos negativos e regressão;
+- revalidação de JSON/GeoJSON no navegador contra cache obsoleto;
+- publicação e smoke test pendentes ao merge em `main`.
 
 ## Modelo para novos módulos
 

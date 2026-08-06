@@ -1,7 +1,7 @@
 import type { CityPoint, GeographyData, StateFeatureCollection } from "../types/geography";
 
 async function fetchGeo<T>(file: string): Promise<T> {
-  const response = await fetch(`${import.meta.env.BASE_URL}data/geography/${file}`);
+  const response = await fetch(`${import.meta.env.BASE_URL}data/geography/${file}`, { cache: "no-cache" });
   if (!response.ok) throw new Error(`Falha ao carregar ${file} (${response.status}).`);
   return response.json() as Promise<T>;
 }

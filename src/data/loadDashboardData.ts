@@ -3,7 +3,7 @@ import type { DashboardData, Dimensions, Fact, Manifest } from "../types/dashboa
 const dataUrl = (file: string) => `${import.meta.env.BASE_URL}data/formularios-respondidos/${file}`;
 
 async function fetchJson<T>(file: string): Promise<T> {
-  const response = await fetch(dataUrl(file));
+  const response = await fetch(dataUrl(file), { cache: "no-cache" });
   if (!response.ok) throw new Error(`Falha ao carregar ${file} (${response.status}).`);
   return response.json() as Promise<T>;
 }
