@@ -2,7 +2,7 @@ import { filterLabels } from "../analytics/filters";
 import { useFilters } from "../state/FilterContext";
 import type { FilterKey, Periodicity } from "../types/dashboard";
 
-const filterKeys: FilterKey[] = ["year", "month", "formId", "council", "state", "city", "unitType", "unitSummary", "responsibleName"];
+const filterKeys: FilterKey[] = ["formId", "council", "state", "city", "unitType", "unitSummary", "responsibleName"];
 const periodicities: Array<{ value: Periodicity; label: string }> = [{ value: 1, label: "Mensal" }, { value: 2, label: "Bimestral" }, { value: 3, label: "Trimestral" }, { value: 6, label: "Semestral" }, { value: 12, label: "Anual" }];
 
 function optionLabel(key: FilterKey, value: string): string {
@@ -12,7 +12,7 @@ function optionLabel(key: FilterKey, value: string): string {
 }
 
 export function FilterBar() {
-  const { filters, optionsFor, setSingleFilter, removeFilter, clearFilters, drillUp, historyDepth, periodicity, setPeriodicity } = useFilters();
+  const { filters, optionsFor, setSingleFilter, removeFilter, clearFilters, drillUp, historyDepth, periodicity, setPeriodicity, periodRange, periodBounds, setPeriodRange } = useFilters();
   const activeEntries = Object.entries(filters) as Array<[FilterKey, string[]]>;
 
   return (
@@ -24,8 +24,9 @@ export function FilterBar() {
           </button>
         )))}
         <span className="filter-periodicity">Periodicidade: {periodicities.find((item) => item.value === periodicity)?.label}</span>
+        <span className="filter-periodicity">Período: {periodRange.start} a {periodRange.end}</span>
         {historyDepth > 0 && <button className="filter-action" type="button" onClick={drillUp}>← Voltar nível</button>}
-        <button className="filter-action" type="button" onClick={clearFilters} disabled={activeEntries.length === 0}>Limpar filtros</button>
+        <button className="filter-action" type="button" onClick={clearFilters}>Limpar filtros</button>
       </div>
 
       <details className="advanced-filters">
@@ -37,6 +38,8 @@ export function FilterBar() {
               {periodicities.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
             </select>
           </label>
+          <label className="period-range-control"><span>Ano/mês inicial</span><input type="month" min={periodBounds.start} max={periodRange.end} value={periodRange.start} onChange={(event) => event.target.value && setPeriodRange({ start: event.target.value, end: periodRange.end })} /></label>
+          <label className="period-range-control"><span>Ano/mês final</span><input type="month" min={periodRange.start} max={periodBounds.end} value={periodRange.end} onChange={(event) => event.target.value && setPeriodRange({ start: periodRange.start, end: event.target.value })} /></label>
           {filterKeys.map((key) => (
             <label key={key}>
               <span>{filterLabels[key]}</span>

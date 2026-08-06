@@ -1,4 +1,4 @@
-import type { Fact, FilterKey, Periodicity } from "../types/dashboard";
+import type { Fact, FilterKey, Periodicity, PeriodRange } from "../types/dashboard";
 export type Aggregate = { key: string; label: string; quantity: number; share: number };
 export type TemporalMatrix = { periods: string[]; groups: Aggregate[]; cells: Array<{ group: string; period: string; quantity: number }> };
 export type CumulativeComparison = { periods: string[]; groups: Aggregate[]; series: Array<{ key: string; label: string; values: number[] }> };
@@ -19,6 +19,13 @@ export function periodFilterValues(period: string, periodicity: Periodicity): { 
   if (!position) return { year: [year] };
   const startMonth = periodicity === 1 ? position : ((position - 1) * periodicity) + 1;
   return { year: [year], month: Array.from({ length: periodicity }, (_, index) => String(startMonth + index)) };
+}
+export function periodRange(period: string, periodicity: Periodicity): PeriodRange {
+  const year = period.slice(0, 4);
+  if (periodicity === 12) return { start: `${year}-01`, end: `${year}-12` };
+  const position = periodicity === 1 ? Number(period.slice(5, 7)) : Number(period.match(/[BST](\d+)/)?.[1]);
+  const startMonth = periodicity === 1 ? position : ((position - 1) * periodicity) + 1;
+  return { start: `${year}-${String(startMonth).padStart(2, "0")}`, end: `${year}-${String(startMonth + periodicity - 1).padStart(2, "0")}` };
 }
 export function aggregateBy(facts: Fact[], key: FilterKey, label?: (fact: Fact) => string): Aggregate[] {
   const totals = new Map<string, { label: string; quantity: number }>();

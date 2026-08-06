@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-import { availableValues, decodeFilters, encodeFilters, filterFacts } from "../analytics/filters";
-import type { Dimensions, Fact, FilterKey, FilterState, Periodicity } from "../types/dashboard";
+import { availableValues, dataPeriodBounds, decodeFilters, encodeFilters, filterFacts, latestCompletePeriodEnd } from "../analytics/filters";
+import type { Dimensions, Fact, FilterKey, FilterState, Periodicity, PeriodRange } from "../types/dashboard";
 
 type FilterContextValue = {
   facts: Fact[];
@@ -11,9 +11,13 @@ type FilterContextValue = {
   historyDepth: number;
   periodicity: Periodicity;
   setPeriodicity: (value: Periodicity) => void;
+  periodRange: PeriodRange;
+  periodBounds: PeriodRange;
+  setPeriodRange: (value: PeriodRange) => void;
   optionsFor: (key: FilterKey) => string[];
   setSingleFilter: (key: FilterKey, value: string) => void;
   drillTo: (updates: FilterState) => void;
+  drillToPeriod: (updates: FilterState, range: PeriodRange) => void;
   removeFilter: (key: FilterKey, value?: string) => void;
   clearFilters: () => void;
   drillUp: () => void;
@@ -23,23 +27,33 @@ const FilterContext = createContext<FilterContextValue | null>(null);
 
 export function FilterProvider({ facts, dimensions, children }: { facts: Fact[]; dimensions: Dimensions; children: React.ReactNode }) {
   const [filters, setFilters] = useState<FilterState>(() => decodeFilters(window.location.search));
-  const [periodicity, setPeriodicity] = useState<Periodicity>(() => { const value = Number(new URLSearchParams(window.location.search).get("periodicity")); return ([1, 2, 3, 6, 12] as number[]).includes(value) ? value as Periodicity : 1; });
-  const [history, setHistory] = useState<FilterState[]>([]);
+  const initialPeriodicity = useMemo<Periodicity>(() => { const value = Number(new URLSearchParams(window.location.search).get("periodicity")); return ([1, 2, 3, 6, 12] as number[]).includes(value) ? value as Periodicity : 1; }, []);
+  const periodBounds = useMemo(() => dataPeriodBounds(facts), [facts]);
+  const defaultRange = useCallback((value: Periodicity): PeriodRange => ({ start: periodBounds.start, end: latestCompletePeriodEnd(facts, value) }), [facts, periodBounds.start]);
+  const [periodicity, setPeriodicityState] = useState<Periodicity>(initialPeriodicity);
+  const [periodRange, setPeriodRangeState] = useState<PeriodRange>(() => { const params = new URLSearchParams(window.location.search); return { start: params.get("periodStart") ?? periodBounds.start, end: params.get("periodEnd") ?? latestCompletePeriodEnd(facts, initialPeriodicity) }; });
+  const [history, setHistory] = useState<Array<{ filters: FilterState; periodRange: PeriodRange }>>([]);
 
   useEffect(() => {
     const params = new URLSearchParams(encodeFilters(filters));
     if (periodicity !== 1) params.set("periodicity", String(periodicity));
+    params.set("periodStart", periodRange.start);
+    params.set("periodEnd", periodRange.end);
     const query = params.toString();
     const url = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
     window.history.replaceState(null, "", url);
-  }, [filters, periodicity]);
+  }, [filters, periodicity, periodRange]);
 
-  const change = useCallback((next: FilterState) => {
+  const change = useCallback((next: FilterState, nextRange = periodRange) => {
     setFilters((current) => {
-      setHistory((items) => [...items, current]);
+      setHistory((items) => [...items, { filters: current, periodRange }]);
       return next;
     });
-  }, []);
+    setPeriodRangeState(nextRange);
+  }, [periodRange]);
+
+  const setPeriodicity = useCallback((value: Periodicity) => { setPeriodicityState(value); change(filters, defaultRange(value)); }, [change, defaultRange, filters]);
+  const setPeriodRange = useCallback((value: PeriodRange) => change(filters, value), [change, filters]);
 
   const setSingleFilter = useCallback((key: FilterKey, value: string) => {
     const next = { ...filters };
@@ -47,6 +61,7 @@ export function FilterProvider({ facts, dimensions, children }: { facts: Fact[];
     change(next);
   }, [change, filters]);
   const drillTo = useCallback((updates: FilterState) => change({ ...filters, ...updates }), [change, filters]);
+  const drillToPeriod = useCallback((updates: FilterState, range: PeriodRange) => change({ ...filters, ...updates }, range), [change, filters]);
 
   const removeFilter = useCallback((key: FilterKey, value?: string) => {
     const next = { ...filters };
@@ -58,11 +73,11 @@ export function FilterProvider({ facts, dimensions, children }: { facts: Fact[];
     change(next);
   }, [change, filters]);
 
-  const clearFilters = useCallback(() => change({}), [change]);
+  const clearFilters = useCallback(() => change({}, defaultRange(periodicity)), [change, defaultRange, periodicity]);
   const drillUp = useCallback(() => {
     setHistory((items) => {
       const previous = items.at(-1);
-      if (previous) setFilters(previous);
+      if (previous) { setFilters(previous.filters); setPeriodRangeState(previous.periodRange); }
       return items.slice(0, -1);
     });
   }, []);
@@ -71,17 +86,21 @@ export function FilterProvider({ facts, dimensions, children }: { facts: Fact[];
     facts,
     dimensions,
     filters,
-    filteredFacts: filterFacts(facts, filters),
+    filteredFacts: filterFacts(facts, filters, undefined, periodRange),
     historyDepth: history.length,
     periodicity,
     setPeriodicity,
-    optionsFor: (key) => availableValues(facts, filters, key),
+    periodRange,
+    periodBounds,
+    setPeriodRange,
+    optionsFor: (key) => availableValues(facts, filters, key, periodRange),
     setSingleFilter,
     drillTo,
+    drillToPeriod,
     removeFilter,
     clearFilters,
     drillUp,
-  }), [facts, dimensions, filters, history.length, periodicity, setSingleFilter, drillTo, removeFilter, clearFilters, drillUp]);
+  }), [facts, dimensions, filters, history.length, periodicity, periodRange, periodBounds, setPeriodicity, setPeriodRange, setSingleFilter, drillTo, drillToPeriod, removeFilter, clearFilters, drillUp]);
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;
 }

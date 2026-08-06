@@ -142,6 +142,9 @@ como limite fixo. Novas cargas podem adicionar anos, meses, dimensões e volume.
 - bimestres, trimestres e semestres seguem períodos civis iniciados em janeiro;
 - a curva acumulada soma cronologicamente os períodos e deve terminar no total do agrupamento;
 - o drill de um período agregado aplica todos os meses que compõem aquele intervalo.
+- o intervalo analítico é inclusivo entre `Ano/mês inicial` e `Ano/mês final`;
+- por padrão, o painel exclui o período ainda em formação conforme a periodicidade;
+- o período completo disponível na fonte continua visível separadamente do recorte analisado.
 
 ### Enriquecimento geográfico
 

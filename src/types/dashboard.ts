@@ -47,3 +47,4 @@ export type DashboardData = {
 export type FilterKey = "year" | "month" | "formId" | "council" | "state" | "city" | "unitType" | "unitSummary" | "responsibleName";
 export type FilterState = Partial<Record<FilterKey, string[]>>;
 export type Periodicity = 1 | 2 | 3 | 6 | 12;
+export type PeriodRange = { start: string; end: string };

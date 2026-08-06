@@ -252,6 +252,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 - cards de total, anos, formulários, conselhos, unidades e responsáveis;
 - periodicidade global mensal, bimestral, trimestral, semestral ou anual;
+- intervalo contínuo por ano/mês inicial e ano/mês final, substituindo filtros isolados;
+- visão inicial encerrada no último período completo da periodicidade selecionada;
 - série temporal com comparação e zoom na periodicidade escolhida;
 - barras 100% empilhadas para proporção por formulário e território;
 - ranking visual horizontal com participação acumulada;

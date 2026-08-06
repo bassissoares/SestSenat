@@ -50,6 +50,8 @@
 - `Limpar filtros` restaura totais e seleções da visão geral;
 - alternar visualização não perde o contexto atual;
 - alternar entre mensal, bimestral, trimestral, semestral e anual preserva o total filtrado;
+- ano/mês inicial e final formam um intervalo contínuo, inclusive quando cruza anos;
+- abertura inicial termina no último período completo e permite incluir manualmente o período atual;
 - série, heatmap, evolução dos rankings e curva acumulada usam a mesma periodicidade;
 - curva acumulada é monotônica e termina no total de cada agrupamento comparado;
 - gráfico de bolhas usa a média de todos os períodos anteriores e o último período

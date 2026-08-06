@@ -80,8 +80,8 @@ export function App() {
             <h1>Formulários respondidos</h1>
             <p className="hero-copy">Visão integrada por período, território, formulário, unidade e responsável.</p>
           </div>
-          <div className="period-pill" aria-label="Período inicial: todos os anos e meses">
-            <span>Período</span>
+          <div className="period-pill" aria-label="Período disponível na fonte de dados">
+            <span>Dados disponíveis</span>
             <strong>{data ? `${data.manifest.periodStart} a ${data.manifest.periodEnd}` : "Todos os anos e meses"}</strong>
           </div>
         </section>
