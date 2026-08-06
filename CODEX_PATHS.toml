@@ -1,0 +1,21 @@
+# Mapa autoritativo do projeto.
+
+[dashboard]
+root = "C:/Projetos/GitHub/SestSenat"
+roadmap = "C:/Projetos/GitHub/SestSenat/QUALITY_ROADMAP.md"
+governance = "C:/Projetos/GitHub/SestSenat/GOVERNANCA.md"
+demands = "C:/Projetos/GitHub/SestSenat/demandas.md"
+scope = "C:/Projetos/GitHub/SestSenat/ESCOPO.md"
+guidelines = "C:/Projetos/GitHub/SestSenat/DIRETRIZES.md"
+data_contract = "C:/Projetos/GitHub/SestSenat/DADOS.md"
+tests = "C:/Projetos/GitHub/SestSenat/TESTES.md"
+decisions = "C:/Projetos/GitHub/SestSenat/DECISOES.md"
+check = "./check.ps1"
+
+[references]
+inspect_web = "C:/Projetos/GitHub/inspect_web"
+
+[publish]
+repository = "bassissoares/SestSenat"
+base_path = "/SestSenat/"
+url = "https://bassissoares.github.io/SestSenat/"
