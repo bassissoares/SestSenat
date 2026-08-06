@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { FilterBar } from "./components/FilterBar";
+import { filterLabels } from "./analytics/filters";
 import { FilterProvider, useFilters } from "./state/FilterContext";
 import { loadDashboardData } from "./data/loadDashboardData";
 import type { DashboardData } from "./types/dashboard";
@@ -11,13 +12,19 @@ const AnalyticsPanel = lazy(() => import("./components/AnalyticsPanel").then((mo
 const RankingPanel = lazy(() => import("./components/RankingPanel").then((module) => ({ default: module.RankingPanel })));
 
 function Dashboard() {
-  const { filteredFacts } = useFilters();
+  const { filteredFacts, filters, periodicity, periodRange, historyDepth, drillUp, clearFilters } = useFilters();
+  const [showContext, setShowContext] = useState(false);
   const total = filteredFacts.reduce((sum, fact) => sum + fact.quantity, 0);
+  const periodicityLabel = { 1: "Mensal", 2: "Bimestral", 3: "Trimestral", 6: "Semestral", 12: "Anual" }[periodicity];
+  const activeFilters = Object.entries(filters).flatMap(([key, values]) => (values ?? []).map((value) => ({ key, label: filterLabels[key as keyof typeof filterLabels], value: key === "formId" ? `Formulário ${value}` : value })));
+
+  useEffect(() => { const update = () => setShowContext(window.scrollY > 420); update(); window.addEventListener("scroll", update, { passive: true }); return () => window.removeEventListener("scroll", update); }, []);
 
   return (
     <>
       <FilterBar />
       <div className="context-banner"><strong>{total.toLocaleString("pt-BR")}</strong> respondidos em {filteredFacts.length.toLocaleString("pt-BR")} agrupamentos no recorte atual.</div>
+      {showContext && <aside className="floating-context" aria-label="Contexto atual da análise"><header><div><span>CONTEXTO ATUAL</span><strong>Nível {historyDepth + 1}</strong></div><b>{total.toLocaleString("pt-BR")}</b></header><dl><div><dt>Periodicidade</dt><dd>{periodicityLabel}</dd></div><div><dt>Intervalo</dt><dd>{periodRange.start} a {periodRange.end}</dd></div></dl><div className="floating-context-filters">{activeFilters.length ? activeFilters.map((item) => <span key={`${item.key}-${item.value}`}><small>{item.label}</small>{item.value}</span>) : <em>Nenhum filtro dimensional</em>}</div><div className="floating-context-actions">{historyDepth > 0 && <button type="button" onClick={drillUp}>← Voltar nível</button>}<button type="button" onClick={clearFilters}>Limpar contexto</button></div></aside>}
       <Suspense fallback={<section className="state-panel" role="status">Preparando visualizações…</section>}>
         <MapPanel />
         <AnalyticsPanel />

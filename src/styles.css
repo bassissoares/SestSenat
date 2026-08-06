@@ -117,6 +117,23 @@ h2 { font-size: 28px; }
 .state-panel-error { display: grid; gap: 6px; color: #8b2f20; border-left: 5px solid #cc3c14; }
 .context-banner { margin-bottom: 18px; padding: 10px 14px; color: var(--brand-navy); background: #dff4ff; border-left: 4px solid var(--brand-sky); border-radius: 8px; font-size: 13px; }
 .context-banner strong { font: 700 20px/1 "Khand", sans-serif; }
+.floating-context { position: fixed; top: 98px; right: 18px; z-index: 900; width: min(290px, calc(100vw - 36px)); padding: 15px; color: var(--brand-navy); background: rgb(255 255 255 / 96%); border: 1px solid #bcd4e1; border-radius: 16px; box-shadow: 0 14px 38px rgb(0 55 112 / 24%); backdrop-filter: blur(10px); animation: context-enter .18s ease-out; }
+.floating-context header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.floating-context header span { display: block; color: var(--brand-blue); font-size: 9px; font-weight: 800; letter-spacing: .12em; }
+.floating-context header strong { display: block; margin-top: 2px; font-size: 14px; }
+.floating-context header > b { color: var(--brand-navy); font: 700 25px/1 "Khand", sans-serif; }
+.floating-context header > b::after { content: " respondidos"; display: block; color: var(--text-muted); font: 600 8px/1.2 "Open Sans", sans-serif; text-align: right; text-transform: uppercase; }
+.floating-context dl { display: grid; grid-template-columns: 1fr 1.35fr; gap: 8px; margin: 10px 0; }
+.floating-context dl div { min-width: 0; padding: 7px; background: #edf5f8; border-radius: 8px; }
+.floating-context dt { color: var(--text-muted); font-size: 8px; font-weight: 700; text-transform: uppercase; }
+.floating-context dd { overflow: hidden; margin: 2px 0 0; font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.floating-context-filters { max-height: 190px; display: flex; flex-wrap: wrap; gap: 6px; overflow-y: auto; }
+.floating-context-filters span { max-width: 100%; padding: 6px 8px; overflow: hidden; color: var(--brand-navy); background: #e2f0f5; border-radius: 8px; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.floating-context-filters small { margin-right: 4px; color: var(--text-muted); font-size: 8px; text-transform: uppercase; }
+.floating-context-filters em { color: var(--text-muted); font-size: 10px; }
+.floating-context-actions { display: flex; justify-content: flex-end; gap: 7px; margin-top: 11px; }
+.floating-context-actions button { padding: 6px 8px; color: var(--brand-blue); background: #fff; border: 1px solid #bfd4df; border-radius: 7px; cursor: pointer; font-size: 10px; font-weight: 700; }
+@keyframes context-enter { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
 .panel { margin-top: 18px; padding: clamp(16px, 2.5vw, 28px); background: #fff; border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow); }
 .panel-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
 .panel-note { max-width: 420px; color: var(--text-muted); font-size: 11px; text-align: right; }
@@ -220,6 +237,9 @@ tbody tr:hover { background: #f8fcff; }
 footer { display: flex; justify-content: space-between; gap: 20px; padding: 22px clamp(20px, 5vw, 72px); color: #c9d9e8; background: var(--brand-navy); font-size: 12px; }
 
 @media (max-width: 760px) {
+  .floating-context { top: auto; right: 12px; bottom: 12px; left: 12px; width: auto; max-height: 38vh; overflow-y: auto; padding: 11px; }
+  .floating-context header > b { font-size: 21px; }
+  .floating-context-filters { max-height: 80px; }
   .site-header, .hero, footer { align-items: flex-start; flex-direction: column; }
   .dataset-status { display: none; }
   .dashboard-main { width: min(100% - 24px, 1500px); padding-top: 24px; }

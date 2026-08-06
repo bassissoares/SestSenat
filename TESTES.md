@@ -47,6 +47,8 @@
 - drill-down segue a hierarquia definida para a visualização;
 - drill-up pelo breadcrumb restaura exatamente o nível anterior;
 - chips identificam todos os filtros ativos e podem ser removidos individualmente;
+- após a rolagem, o resumo flutuante reflete intervalo, periodicidade, nível,
+  total e dimensões filtradas sem encobrir a análise em telas menores;
 - `Limpar filtros` restaura totais e seleções da visão geral;
 - alternar visualização não perde o contexto atual;
 - alternar entre mensal, bimestral, trimestral, semestral e anual preserva o total filtrado;

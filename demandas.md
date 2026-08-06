@@ -161,6 +161,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - data da última carga e cobertura temporal derivadas do manifesto;
 - layout responsivo com mapa e panorama acima da dobra em desktop;
 - filtros avançados recolhidos e chips de seleção sempre visíveis;
+- resumo flutuante do contexto durante a rolagem, com periodicidade, intervalo,
+  nível, total, filtros ativos e ações de retorno/limpeza;
 - estados de loading, vazio, erro e localização não identificada.
 
 ### Critérios de aceite

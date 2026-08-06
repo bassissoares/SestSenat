@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("./components/EChart", () => ({ EChart: ({ ariaLabel }: { ariaLabel: string }) => <div role="img" aria-label={ariaLabel} /> }));
@@ -23,5 +23,8 @@ describe("App shell", () => {
     expect(screen.getByRole("main")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("2025-01 a 2026-12")).toBeInTheDocument());
     expect(screen.getAllByText("Visão geral")).toHaveLength(2);
+    Object.defineProperty(window, "scrollY", { value: 600, configurable: true });
+    fireEvent.scroll(window);
+    expect(await screen.findByRole("complementary", { name: "Contexto atual da análise" })).toHaveTextContent("Periodicidade");
   });
 });
