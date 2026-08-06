@@ -4,6 +4,7 @@ export type TemporalMatrix = { periods: string[]; groups: Aggregate[]; cells: Ar
 export type CumulativeComparison = { periods: string[]; groups: Aggregate[]; series: Array<{ key: string; label: string; values: number[] }> };
 export type VariationPoint = { key: string; label: string; average: number; latest: number; variation: number | null };
 export type VariationAnalysis = { historyStart: string; historyEnd: string; latestPeriod: string; points: VariationPoint[] };
+export type PeriodPerformance = { key: string; quantity: number; previousAverage: number | null; difference: number | null; variation: number | null; status: "growth" | "stable" | "decline" | "baseline" };
 export function periodKey(year: number, month: number, periodicity: Periodicity): string {
   if (periodicity === 12) return String(year);
   const position = Math.floor((month - 1) / periodicity) + 1;
@@ -55,6 +56,17 @@ export function temporalMatrix(facts: Fact[], key: FilterKey, label?: (fact: Fac
   }
   const cells = [...totals.entries()].map(([compound, quantity]) => { const [group, period] = JSON.parse(compound) as [string, string]; return { group, period, quantity }; });
   return { periods, groups, cells };
+}
+export function periodPerformance(facts: Fact[], periodicity: Periodicity): PeriodPerformance[] {
+  let previousTotal = 0;
+  return periodSeries(facts, periodicity).map((period, index) => {
+    const previousAverage = index ? previousTotal / index : null;
+    const difference = previousAverage === null ? null : period.quantity - previousAverage;
+    const variation = previousAverage ? difference! / previousAverage : null;
+    const status = previousAverage === null ? "baseline" : difference! > 0 ? "growth" : difference! < 0 ? "decline" : "stable";
+    previousTotal += period.quantity;
+    return { key: period.key, quantity: period.quantity, previousAverage, difference, variation, status };
+  });
 }
 
 export function cumulativeComparison(facts: Fact[], key: FilterKey, label?: (fact: Fact) => string, periodicity: Periodicity = 1, limit = 5): CumulativeComparison {

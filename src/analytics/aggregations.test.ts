@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { aggregateBy, cumulativeComparison, monthlySeries, periodFilterValues, periodKey, periodRange, periodSeries, sumShares, temporalMatrix, variationAnalysis } from "./aggregations";
+import { aggregateBy, cumulativeComparison, monthlySeries, periodFilterValues, periodKey, periodPerformance, periodRange, periodSeries, sumShares, temporalMatrix, variationAnalysis } from "./aggregations";
 import type { Fact } from "../types/dashboard";
 const base = { formName: "Form", council: "CR", unitSummary: "B 1", unitType: "B", unitId: 1, unitName: "U", unitStatus: "Ativo", city: "Cidade", state: "SP", geoStatus: "city-detected", responsibleName: "Pessoa" };
 const facts: Fact[] = [{ ...base, year: 2025, month: 1, formId: 9, quantity: 30 }, { ...base, year: 2025, month: 2, formId: 12, formName: "Outro", quantity: 70 }];
@@ -13,4 +13,5 @@ describe("agregações analíticas", () => {
   it("gera curvas acumuladas reconciliadas e crescentes", () => { const comparison = cumulativeComparison(facts, "unitType", undefined, 1); expect(comparison.series[0].values).toEqual([30, 100]); expect(comparison.series[0].values.at(-1)).toBe(comparison.groups[0].quantity); });
   it("agrega o heatmap na periodicidade escolhida", () => expect(temporalMatrix(facts, "unitType", undefined, 18, 2).periods).toEqual(["2025 · B1"]));
   it("compara o último período com a média histórica", () => { const analysis = variationAnalysis(facts, "unitType"); expect(analysis).toMatchObject({ historyStart: "2025-01", historyEnd: "2025-01", latestPeriod: "2025-02" }); expect(analysis.points[0]).toMatchObject({ average: 30, latest: 70, variation: 4 / 3 }); });
+  it("calcula o desempenho de cada período contra a média anterior", () => expect(periodPerformance(facts, 1)).toMatchObject([{ key: "2025-01", quantity: 30, previousAverage: null, status: "baseline" }, { key: "2025-02", quantity: 70, previousAverage: 30, difference: 40, variation: 4 / 3, status: "growth" }]));
 });

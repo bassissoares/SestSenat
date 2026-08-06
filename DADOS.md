@@ -141,6 +141,8 @@ como limite fixo. Novas cargas podem adicionar anos, meses, dimensões e volume.
 - a periodicidade apenas agrupa os fatos existentes; não altera o total do contexto filtrado;
 - bimestres, trimestres e semestres seguem períodos civis iniciados em janeiro;
 - a curva acumulada soma cronologicamente os períodos e deve terminar no total do agrupamento;
+- a média anterior de um período é a média aritmética de todos os períodos que o antecedem no recorte;
+- diferença e variação são calculadas contra essa média; o primeiro período é identificado como base inicial;
 - o drill de um período agregado aplica todos os meses que compõem aquele intervalo.
 - o intervalo analítico é inclusivo entre `Ano/mês inicial` e `Ano/mês final`;
 - por padrão, o painel exclui o período ainda em formação conforme a periodicidade;

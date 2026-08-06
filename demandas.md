@@ -263,6 +263,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - curva de crescimento acumulado comparando os cinco principais agrupamentos;
 - gráfico de bolhas comparando o último período com a média dos períodos anteriores,
   com volume atual no tamanho, variação no eixo vertical e agrupamento selecionável;
+- tabela de desempenho por período com total, média anterior, diferença, variação e situação;
+- gráfico combinado de total realizado e média dos períodos anteriores, com drill no período;
 - alternância entre quantidade absoluta e participação percentual;
 - destaque visual e animações curtas sem prejudicar leitura;
 - tooltips ricos e acessíveis;

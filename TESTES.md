@@ -56,6 +56,8 @@
 - curva acumulada é monotônica e termina no total de cada agrupamento comparado;
 - gráfico de bolhas usa a média de todos os períodos anteriores e o último período
   completo disponível na periodicidade selecionada;
+- tabela e gráfico de desempenho reconciliam total, média dos períodos anteriores,
+  diferença absoluta, variação percentual e situação de cada período;
 - estado vazio indica qual combinação de filtros não possui dados;
 - teclado e leitor de tela conseguem acionar filtros e consultar alternativas
   textuais aos gráficos.
