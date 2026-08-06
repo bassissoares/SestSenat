@@ -1,32 +1,81 @@
-const packages = [
-  "Visão geral",
-  "Mapa por cidade",
-  "Proporções",
-  "Rankings",
-];
+import { useEffect, useState } from "react";
+
+import { FilterBar } from "./components/FilterBar";
+import { FilterProvider, useFilters } from "./state/FilterContext";
+import { loadDashboardData } from "./data/loadDashboardData";
+import type { DashboardData } from "./types/dashboard";
+
+const packages = ["Visão geral", "Mapa por cidade", "Proporções", "Rankings"];
+
+function Dashboard() {
+  const { filteredFacts } = useFilters();
+  const total = filteredFacts.reduce((sum, fact) => sum + fact.quantity, 0);
+
+  return (
+    <>
+      <FilterBar />
+      <section className="loading-panel" aria-live="polite">
+        <div className="loading-map" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div>
+          <p className="eyebrow">RECORTE ATUAL</p>
+          <h2>{total.toLocaleString("pt-BR")} respondidos</h2>
+          <p>
+            {filteredFacts.length.toLocaleString("pt-BR")} agrupamentos alimentam o mapa,
+            os gráficos e as tabelas deste mesmo contexto.
+          </p>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function LoadingState() {
+  return <section className="state-panel" role="status">Carregando dados validados…</section>;
+}
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <section className="state-panel state-panel-error" role="alert">
+      <strong>Não foi possível carregar o painel.</strong>
+      <span>{message}</span>
+    </section>
+  );
+}
 
 export function App() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    loadDashboardData()
+      .then((loaded) => active && setData(loaded))
+      .catch((cause: unknown) => {
+        if (active) setError(cause instanceof Error ? cause.message : "Erro inesperado.");
+      });
+    return () => { active = false; };
+  }, []);
+
   return (
     <div className="app-shell">
       <header className="site-header">
         <div className="brand" aria-label="SEST SENAT — Painéis InspectApp">
           <span className="brand-mark" aria-hidden="true">SS</span>
-          <span>
-            <strong>SEST SENAT</strong>
-            <small>Painéis InspectApp</small>
-          </span>
+          <span><strong>SEST SENAT</strong><small>Painéis InspectApp</small></span>
         </div>
         <div className="dataset-status">
           <span className="status-dot" aria-hidden="true" />
-          Dados validados
+          {data ? "Dados validados" : "Carregando dados"}
         </div>
       </header>
 
       <nav className="module-nav" aria-label="Navegação do painel">
         {packages.map((item, index) => (
-          <a key={item} href={`#secao-${index}`} aria-current={index === 0 ? "page" : undefined}>
-            {item}
-          </a>
+          <a key={item} href={`#secao-${index}`} aria-current={index === 0 ? "page" : undefined}>{item}</a>
         ))}
       </nav>
 
@@ -35,38 +84,24 @@ export function App() {
           <div>
             <p className="eyebrow">PANORAMA NACIONAL</p>
             <h1>Formulários respondidos</h1>
-            <p className="hero-copy">
-              Visão integrada por período, território, formulário, unidade e responsável.
-            </p>
+            <p className="hero-copy">Visão integrada por período, território, formulário, unidade e responsável.</p>
           </div>
           <div className="period-pill" aria-label="Período inicial: todos os anos e meses">
             <span>Período</span>
-            <strong>Todos os anos e meses</strong>
+            <strong>{data ? `${data.manifest.periodStart} a ${data.manifest.periodEnd}` : "Todos os anos e meses"}</strong>
           </div>
         </section>
 
-        <section className="filter-summary" aria-label="Resumo dos filtros">
-          <span className="filter-chip filter-chip-active">Visão geral</span>
-          <button type="button" disabled>Limpar filtros</button>
-        </section>
-
-        <section className="loading-panel" aria-live="polite">
-          <div className="loading-map" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div>
-            <p className="eyebrow">PRÓXIMA ENTREGA</p>
-            <h2>Mapa e análises coordenadas</h2>
-            <p>Os componentes analíticos serão ativados pelos próximos pacotes.</p>
-          </div>
-        </section>
+        {error ? <ErrorState message={error} /> : !data ? <LoadingState /> : (
+          <FilterProvider facts={data.facts} dimensions={data.dimensions}>
+            <Dashboard />
+          </FilterProvider>
+        )}
       </main>
 
       <footer>
         <span>Fonte: InspectApp</span>
-        <span>SEST SENAT · Inteligência para decisões</span>
+        <span>{data ? `Carga ${data.manifest.datasetVersion}` : "SEST SENAT · Inteligência para decisões"}</span>
       </footer>
     </div>
   );

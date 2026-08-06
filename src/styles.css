@@ -98,6 +98,20 @@ h2 { font-size: 28px; }
 .filter-chip { padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
 .filter-chip-active { color: #fff; background: var(--brand-navy); }
 .filter-summary button { margin-left: auto; padding: 8px 12px; color: #8a9baa; background: transparent; border: 0; }
+.filter-summary .filter-chip-selected { display: flex; gap: 8px; align-items: center; margin-left: 0; color: var(--brand-navy); background: #dceefa; border: 1px solid #b9d8ec; cursor: pointer; }
+.filter-chip-selected b { font-size: 17px; line-height: 1; }
+.filter-summary .filter-action { margin-left: 0; color: var(--brand-blue); cursor: pointer; font-weight: 700; }
+.filter-summary .filter-action:last-child { margin-left: auto; }
+.filter-summary .filter-action:disabled { color: #9aacba; cursor: default; }
+.advanced-filters { margin-bottom: 18px; background: #fff; border: 1px solid var(--border); border-radius: 14px; }
+.advanced-filters summary { padding: 13px 16px; color: var(--brand-navy); cursor: pointer; font-weight: 700; }
+.filter-grid { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 14px; padding: 4px 16px 18px; }
+.filter-grid label span { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.filter-grid select { width: 100%; min-height: 40px; padding: 7px 10px; color: var(--text); background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+.filter-grid select:focus { outline: 3px solid rgb(32 170 238 / 25%); border-color: var(--brand-sky); }
+
+.state-panel { margin-top: 28px; padding: 28px; color: var(--brand-navy); background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
+.state-panel-error { display: grid; gap: 6px; color: #8b2f20; border-left: 5px solid #cc3c14; }
 
 .loading-panel {
   min-height: 420px;
@@ -128,6 +142,9 @@ footer { display: flex; justify-content: space-between; gap: 20px; padding: 22px
   .period-pill { width: 100%; }
   .loading-panel { grid-template-columns: 1fr; }
   .loading-map { min-height: 240px; }
+  .filter-grid { grid-template-columns: 1fr; }
+  .filter-summary { flex-wrap: wrap; }
+  .filter-summary .filter-action:last-child { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

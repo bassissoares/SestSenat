@@ -180,7 +180,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-03] Motor de filtros e interação coordenada
 
-- Status: `PENDENTE`.
+- Status: `CONCLUÍDO`.
 - Dependências: `BASE-03`, `PKG-01` e `PKG-02`.
 
 ### Escopo
@@ -200,6 +200,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - drill-up retorna ao nível anterior em um clique;
 - visão geral integral é restaurada em um clique;
 - interação permanece fluida no volume completo.
+
+### Evidências
+
+- carga paralela de fatos, dimensões e manifesto com reconciliação de linhas;
+- estado canônico para oito dimensões e filtros em cascata;
+- query string compartilhável, chips removíveis, limpar e voltar nível;
+- visão geral sem seleção inicial e filtros avançados recolhidos;
+- testes unitários de combinação e serialização dos filtros.
 
 ## [PKG-04] Mapa inicial por cidade e unidade
 
