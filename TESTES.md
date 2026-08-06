@@ -52,6 +52,8 @@
 - alternar entre mensal, bimestral, trimestral, semestral e anual preserva o total filtrado;
 - série, heatmap, evolução dos rankings e curva acumulada usam a mesma periodicidade;
 - curva acumulada é monotônica e termina no total de cada agrupamento comparado;
+- gráfico de bolhas usa a média de todos os períodos anteriores e o último período
+  completo disponível na periodicidade selecionada;
 - estado vazio indica qual combinação de filtros não possui dados;
 - teclado e leitor de tela conseguem acionar filtros e consultar alternativas
   textuais aos gráficos.

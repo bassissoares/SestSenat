@@ -257,6 +257,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - heatmap temporal alternável por tipo de unidade, unidade, conselho, cidade,
   formulário e responsável;
 - curva de crescimento acumulado comparando os cinco principais agrupamentos;
+- gráfico de bolhas comparando o último período com a média dos períodos anteriores,
+  com volume atual no tamanho, variação no eixo vertical e agrupamento selecionável;
 - alternância entre quantidade absoluta e participação percentual;
 - destaque visual e animações curtas sem prejudicar leitura;
 - tooltips ricos e acessíveis;

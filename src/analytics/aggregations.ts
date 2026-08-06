@@ -2,6 +2,8 @@ import type { Fact, FilterKey, Periodicity } from "../types/dashboard";
 export type Aggregate = { key: string; label: string; quantity: number; share: number };
 export type TemporalMatrix = { periods: string[]; groups: Aggregate[]; cells: Array<{ group: string; period: string; quantity: number }> };
 export type CumulativeComparison = { periods: string[]; groups: Aggregate[]; series: Array<{ key: string; label: string; values: number[] }> };
+export type VariationPoint = { key: string; label: string; average: number; latest: number; variation: number | null };
+export type VariationAnalysis = { historyStart: string; historyEnd: string; latestPeriod: string; points: VariationPoint[] };
 export function periodKey(year: number, month: number, periodicity: Periodicity): string {
   if (periodicity === 12) return String(year);
   const position = Math.floor((month - 1) / periodicity) + 1;
@@ -61,5 +63,23 @@ export function cumulativeComparison(facts: Fact[], key: FilterKey, label?: (fac
   }
   const series = groups.map((group) => { let cumulative = 0; return { key: group.key, label: group.label, values: periods.map((period) => { cumulative += totals.get(JSON.stringify([group.key, period])) ?? 0; return cumulative; }) }; });
   return { periods, groups, series };
+}
+export function variationAnalysis(facts: Fact[], key: FilterKey, label?: (fact: Fact) => string, periodicity: Periodicity = 1, limit = 30): VariationAnalysis {
+  const periods = periodSeries(facts, periodicity).map((period) => period.key);
+  const latestPeriod = periods.at(-1) ?? "";
+  const historicalPeriods = periods.slice(0, -1);
+  const groups = new Map<string, { label: string; historical: number; latest: number }>();
+  for (const fact of facts) {
+    const groupKey = String(fact[key] ?? "Não identificado");
+    const group = groups.get(groupKey) ?? { label: label?.(fact) ?? groupKey, historical: 0, latest: 0 };
+    if (periodKey(fact.year, fact.month, periodicity) === latestPeriod) group.latest += fact.quantity;
+    else group.historical += fact.quantity;
+    groups.set(groupKey, group);
+  }
+  const points = [...groups.entries()].map(([groupKey, group]) => {
+    const average = historicalPeriods.length ? group.historical / historicalPeriods.length : 0;
+    return { key: groupKey, label: group.label, average, latest: group.latest, variation: average ? (group.latest - average) / average : null };
+  }).sort((a, b) => Math.max(b.latest, b.average) - Math.max(a.latest, a.average)).slice(0, limit);
+  return { historyStart: historicalPeriods[0] ?? "", historyEnd: historicalPeriods.at(-1) ?? "", latestPeriod, points };
 }
 export const monthlySeries = (facts: Fact[]) => periodSeries(facts, 1);
