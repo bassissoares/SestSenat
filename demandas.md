@@ -159,6 +159,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - tokens azul escuro, azul principal, azul claro, amarelo e verde;
 - cabeçalho compacto, período, última atualização e fonte;
 - data da última carga e cobertura temporal derivadas do manifesto;
+- data e horário da carga visíveis no cabeçalho e glossário analítico acessível;
+- aviso destacado quando o recorte inclui período ainda em formação;
 - layout responsivo com mapa e panorama acima da dobra em desktop;
 - filtros avançados recolhidos e chips de seleção sempre visíveis;
 - resumo flutuante do contexto durante a rolagem, com periodicidade, intervalo,

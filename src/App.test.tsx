@@ -11,7 +11,7 @@ describe("App shell", () => {
   it("abre na visão geral com o período integral da carga", async () => {
     const responses = [
       [{ year: 2025, month: 1, formId: 9, formName: "Form", council: "CR", unitSummary: "B 1", unitType: "B", unitId: 1, unitName: "U", unitStatus: "Ativo", city: "Cidade", state: "SP", geoStatus: "city-detected", responsibleName: "Pessoa", quantity: 10 }],
-      { datasetVersion: "abc", periodStart: "2025-01", periodEnd: "2026-12", publishedRows: 1, warnings: 0, totalAnswered: 10, totalsByYear: { "2025": 10 } },
+      { datasetVersion: "abc", generatedAt: "2026-08-06T17:32:10Z", periodStart: "2025-01", periodEnd: "2026-12", publishedRows: 1, warnings: 0, totalAnswered: 10, totalsByYear: { "2025": 10 } },
       { years: [2025], months: [1], forms: [{ id: 9, name: "Form" }], councils: ["CR"], units: ["B 1"], unitTypes: ["B"], responsibles: ["Pessoa"] },
       [{ municipalityId: "1", city: "Cidade", normalizedCity: "CIDADE", state: "SP", latitude: -23, longitude: -46, positionType: "ibge-simplified-mesh-center" }],
       { type: "FeatureCollection", features: [] },
@@ -22,6 +22,11 @@ describe("App shell", () => {
     expect(screen.getByRole("heading", { name: "Formulários respondidos" })).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("2025-01 a 2026-12")).toBeInTheDocument());
+    expect(screen.getByText(/Atualizado em/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Glossário" }));
+    expect(screen.getByRole("dialog", { name: "Glossário do painel" })).toHaveTextContent("Variação vs. média anterior");
+    fireEvent.click(screen.getByRole("button", { name: "Fechar glossário" }));
+    expect(screen.queryByRole("dialog", { name: "Glossário do painel" })).not.toBeInTheDocument();
     expect(screen.getAllByText("Visão geral")).toHaveLength(2);
     Object.defineProperty(window, "scrollY", { value: 600, configurable: true });
     fireEvent.scroll(window);

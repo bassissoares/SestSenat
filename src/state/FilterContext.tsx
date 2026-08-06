@@ -13,6 +13,7 @@ type FilterContextValue = {
   setPeriodicity: (value: Periodicity) => void;
   periodRange: PeriodRange;
   periodBounds: PeriodRange;
+  isPeriodIncomplete: boolean;
   setPeriodRange: (value: PeriodRange) => void;
   optionsFor: (key: FilterKey) => string[];
   setSingleFilter: (key: FilterKey, value: string) => void;
@@ -92,6 +93,7 @@ export function FilterProvider({ facts, dimensions, children }: { facts: Fact[];
     setPeriodicity,
     periodRange,
     periodBounds,
+    isPeriodIncomplete: periodRange.end > latestCompletePeriodEnd(facts, periodicity),
     setPeriodRange,
     optionsFor: (key) => availableValues(facts, filters, key, periodRange),
     setSingleFilter,

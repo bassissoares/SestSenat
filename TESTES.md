@@ -54,6 +54,8 @@
 - alternar entre mensal, bimestral, trimestral, semestral e anual preserva o total filtrado;
 - ano/mês inicial e final formam um intervalo contínuo, inclusive quando cruza anos;
 - abertura inicial termina no último período completo e permite incluir manualmente o período atual;
+- período parcial gera alerta no contexto principal, nas análises e no resumo flutuante;
+- glossário abre e fecha por controle acessível, e a data da carga corresponde ao manifesto;
 - série, heatmap, variação dos rankings e curva acumulada usam a mesma periodicidade;
 - rankings comparam o último período à média de todos os anteriores e não às extremidades do intervalo;
 - curva acumulada é monotônica e termina no total de cada agrupamento comparado;
