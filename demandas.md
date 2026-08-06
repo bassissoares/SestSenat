@@ -302,7 +302,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - ranking de unidades, conselhos, cidades e formulários;
 - ordem dos agrupamentos: conselhos, tipos de unidade, unidades, cidades, responsáveis e formulários;
 - ranking de cidades identificado por cidade e UF;
-- posição, quantidade, participação e evolução no período;
+- posição, quantidade, participação e variação do último período contra a média dos anteriores;
 - pesquisa textual, ordenação, paginação e colunas configuráveis;
 - tabela mestre refletindo seleções originadas em mapa e gráficos;
 - seleção de linha atualizando mapa, gráficos e indicadores;
@@ -322,7 +322,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 - rankings alternáveis de responsáveis, tipos de unidade, unidades, conselhos, cidades e formulários;
 - responsáveis apresentam unidades vinculadas, preservando vínculos múltiplos;
-- posição, quantidade, participação e evolução entre primeiro e último ano;
+- posição, quantidade, participação e variação contra a média histórica anterior;
 - pesquisa, ordenação e paginação de dez registros;
 - ação de linha integrada ao filtro global e breadcrumb;
 - exportação CSV limitada ao recorte pesquisado e autorizado.
