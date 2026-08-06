@@ -39,6 +39,7 @@ UNIT_PATTERN = re.compile(
     r"\[UF=(?P<state>[A-Z]{2})\]$"
 )
 CITY_PATTERN = re.compile(r"-\s*(?P<city>.+?)/(?P<state>[A-Z]{2})$")
+CITY_WITHOUT_STATE_PATTERN = re.compile(r"-\s*(?P<city>[^-/]+)$")
 
 
 class ImportValidationError(ValueError):
@@ -98,13 +99,21 @@ def parse_unit(detail: str) -> dict[str, object | None]:
 
     groups = match.groupdict()
     city_match = CITY_PATTERN.search(groups["name"])
+    city_without_state = CITY_WITHOUT_STATE_PATTERN.search(groups["name"])
+    city = (
+        city_match.group("city").strip()
+        if city_match
+        else city_without_state.group("city").strip()
+        if city_without_state
+        else None
+    )
     return {
         "unitId": int(groups["id"]),
         "unitName": groups["name"],
         "unitStatus": groups["status"],
-        "city": city_match.group("city").strip() if city_match else None,
+        "city": city,
         "state": city_match.group("state") if city_match else groups["state"],
-        "geoStatus": "city-detected" if city_match else "city-missing",
+        "geoStatus": "city-detected" if city else "city-missing",
     }
 
 
@@ -322,4 +331,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { FilterBar } from "./components/FilterBar";
+import { MapPanel } from "./components/MapPanel";
 import { FilterProvider, useFilters } from "./state/FilterContext";
 import { loadDashboardData } from "./data/loadDashboardData";
 import type { DashboardData } from "./types/dashboard";
@@ -14,21 +15,8 @@ function Dashboard() {
   return (
     <>
       <FilterBar />
-      <section className="loading-panel" aria-live="polite">
-        <div className="loading-map" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-        <div>
-          <p className="eyebrow">RECORTE ATUAL</p>
-          <h2>{total.toLocaleString("pt-BR")} respondidos</h2>
-          <p>
-            {filteredFacts.length.toLocaleString("pt-BR")} agrupamentos alimentam o mapa,
-            os gráficos e as tabelas deste mesmo contexto.
-          </p>
-        </div>
-      </section>
+      <div className="context-banner"><strong>{total.toLocaleString("pt-BR")}</strong> respondidos em {filteredFacts.length.toLocaleString("pt-BR")} agrupamentos no recorte atual.</div>
+      <MapPanel />
     </>
   );
 }

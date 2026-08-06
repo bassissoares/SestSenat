@@ -11,6 +11,7 @@ type FilterContextValue = {
   historyDepth: number;
   optionsFor: (key: FilterKey) => string[];
   setSingleFilter: (key: FilterKey, value: string) => void;
+  drillTo: (updates: FilterState) => void;
   removeFilter: (key: FilterKey, value?: string) => void;
   clearFilters: () => void;
   drillUp: () => void;
@@ -40,6 +41,7 @@ export function FilterProvider({ facts, dimensions, children }: { facts: Fact[];
     if (value) next[key] = [value]; else delete next[key];
     change(next);
   }, [change, filters]);
+  const drillTo = useCallback((updates: FilterState) => change({ ...filters, ...updates }), [change, filters]);
 
   const removeFilter = useCallback((key: FilterKey, value?: string) => {
     const next = { ...filters };
@@ -68,10 +70,11 @@ export function FilterProvider({ facts, dimensions, children }: { facts: Fact[];
     historyDepth: history.length,
     optionsFor: (key) => availableValues(facts, filters, key),
     setSingleFilter,
+    drillTo,
     removeFilter,
     clearFilters,
     drillUp,
-  }), [facts, dimensions, filters, history.length, setSingleFilter, removeFilter, clearFilters, drillUp]);
+  }), [facts, dimensions, filters, history.length, setSingleFilter, drillTo, removeFilter, clearFilters, drillUp]);
 
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;
 }

@@ -4,9 +4,9 @@ dist/
 coverage/
 __pycache__/
 *.pyc
+*.tsbuildinfo
 
 # Fontes recebidas não entram no site ou no repositório público.
 data/input/
 data/private/
 *.xlsx
-

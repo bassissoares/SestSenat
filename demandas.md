@@ -211,7 +211,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-04] Mapa inicial por cidade e unidade
 
-- Status: `PENDENTE`.
+- Status: `CONCLUÍDO`.
 - Dependências: `PKG-01` e `PKG-03`.
 
 ### Escopo
@@ -232,6 +232,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - clicar no mapa filtra todo o painel;
 - posição aproximada é informada ao usuário;
 - falha do mapa-base não impede o uso das demais análises.
+
+### Evidências
+
+- municípios relacionados à API de Localidades e malhas simplificadas do IBGE;
+- GeoJSON estadual e centros municipais gerados fora do CSV bruto;
+- mapa Leaflet com UF, bolhas proporcionais, tooltip e alternativa textual;
+- clique em UF ou cidade integrado ao motor de filtros e drill;
+- pendências geográficas preservadas sem retirar valores dos totais.
 
 ## [PKG-05] Indicadores e gráficos de proporção
 

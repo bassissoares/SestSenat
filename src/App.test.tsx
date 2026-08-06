@@ -11,6 +11,8 @@ describe("App shell", () => {
       [{ year: 2025, month: 1, formId: 9, formName: "Form", council: "CR", unitSummary: "U", unitId: 1, unitName: "U", unitStatus: "Ativo", city: "Cidade", state: "SP", geoStatus: "city-detected", responsibleName: "Pessoa", quantity: 10 }],
       { datasetVersion: "abc", periodStart: "2025-01", periodEnd: "2026-12", publishedRows: 1, warnings: 0, totalAnswered: 10, totalsByYear: { "2025": 10 } },
       { years: [2025], months: [1], forms: [{ id: 9, name: "Form" }], councils: ["CR"], units: ["U"], responsibles: ["Pessoa"] },
+      [{ municipalityId: "1", city: "Cidade", normalizedCity: "CIDADE", state: "SP", latitude: -23, longitude: -46, positionType: "ibge-simplified-mesh-center" }],
+      { type: "FeatureCollection", features: [] },
     ];
     let call = 0;
     vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => responses[call++] })));
