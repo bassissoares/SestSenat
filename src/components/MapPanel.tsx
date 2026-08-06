@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CircleMarker, GeoJSON, MapContainer, TileLayer, Tooltip } from "react-leaflet";
+import { CircleMarker, GeoJSON, MapContainer, Pane, TileLayer, Tooltip } from "react-leaflet";
 import type { PathOptions } from "leaflet";
 
 import { loadGeography } from "../data/loadGeography";
@@ -72,15 +72,15 @@ export function MapPanel() {
         <>
           <MapContainer className="interactive-map" center={[-14.5, -52.5]} zoom={4} minZoom={3} maxZoom={10} scrollWheelZoom>
             <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <GeoJSON key={`states-${filteredFacts.length}`} data={geography.states} style={stateStyle} onEachFeature={(feature, layer) => {
+            <Pane name="state-polygons" style={{ zIndex: 410 }}><GeoJSON key={`states-${filteredFacts.length}`} data={geography.states} style={stateStyle} onEachFeature={(feature, layer) => {
               const state = feature.properties?.state;
               if (state) layer.on({ click: () => drillTo({ state: [state] }) });
-            }} />
-            {cities.map((city) => (
+            }} /></Pane>
+            <Pane name="city-bubbles" style={{ zIndex: 430 }}>{cities.map((city) => (
               <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity)) + (highlightedUnitType === city.dominantType ? 2 : 0)} pathOptions={{ color: "#003770", fillColor: colorForType(city.dominantType), fillOpacity: !highlightedUnitType || highlightedUnitType === city.dominantType ? .9 : .12, opacity: !highlightedUnitType || highlightedUnitType === city.dominantType ? 1 : .18, weight: highlightedUnitType === city.dominantType ? 3 : 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.filterCity] }) }}>
                 <Tooltip sticky direction="top" opacity={.96} className="map-tooltip"><strong>{city.city}/{city.state}</strong><br /><span>Tipo predominante: <b>{city.dominantType}</b></span><br />{city.quantity.toLocaleString("pt-BR")} respondidos<br />{city.units} unidades · {city.responsibles} responsáveis<br /><span>Composição: {city.unitTypes.map((item) => `${item.type} ${item.quantity.toLocaleString("pt-BR")}`).join(" · ")}</span></Tooltip>
               </CircleMarker>
-            ))}
+            ))}</Pane>
           </MapContainer>
           <div className="map-legend"><span className="state-scale"><i className="legend-state" /> Volume por UF <small>menor</small><i className="legend-state-gradient" /><small>maior</small></span>{Object.entries(unitTypeColors).map(([type, color]) => <button type="button" className={highlightedUnitType === type ? "active" : highlightedUnitType ? "muted" : ""} aria-pressed={highlightedUnitType === type} key={type} onClick={() => setHighlightedUnitType((current) => current === type ? null : type)} title={`Destacar cidades do tipo ${type}`}><i className="legend-city" style={{ backgroundColor: color }} /> Tipo {type}</button>)}<span className="map-city-count">{cities.length} cidades localizadas</span></div>
           <details className="map-alternative">
