@@ -107,7 +107,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-01] Contrato e pipeline do módulo
 
-- Status: `PENDENTE`.
+- Status: `CONCLUÍDO`.
 - Dependência: `BASE-02`.
 
 ### Escopo
@@ -137,6 +137,15 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - falha de validação não altera os JSON públicos vigentes;
 - saída reproduzível e testada;
 - nenhuma coluna fora do contrato publicada.
+
+### Evidências
+
+- snapshot `b7ef33b912a56c3c`: 2.459 agrupamentos e 507.741 respostas;
+- reconciliação: 335.072 em 2025 e 172.669 em 2026;
+- 18 alertas geográficos preservados no relatório de qualidade;
+- 4 testes automatizados cobrindo cabeçalho, total, rejeição e rollback;
+- comando: `python scripts/import_forms.py --input <arquivo.csv>`;
+- checks: `./check.ps1` aprovado.
 
 ## [PKG-02] Design system SEST SENAT e shell analítico
 
