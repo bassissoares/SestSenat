@@ -149,7 +149,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ## [PKG-02] Design system SEST SENAT e shell analítico
 
-- Status: `PENDENTE`.
+- Status: `CONCLUÍDO`.
 - Dependência: `BASE-01`.
 
 ### Escopo
@@ -169,6 +169,14 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - contraste e navegação por teclado aprovados;
 - visão geral acessível sem clique inicial;
 - celular, tablet e desktop validados.
+
+### Evidências
+
+- shell React/TypeScript/Vite com base `/SestSenat/`;
+- fontes Khand e Open Sans empacotadas localmente;
+- tokens visuais, navegação, skip-link e redução de movimento;
+- teste de abertura na visão geral;
+- `npm test` e `npm run build` integrados ao `check.ps1`.
 
 ## [PKG-03] Motor de filtros e interação coordenada
 

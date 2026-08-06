@@ -48,3 +48,27 @@ finally {
 }
 
 Write-Host 'Testes do pipeline: OK'
+
+if (Test-Path -LiteralPath (Join-Path $PSScriptRoot 'package.json')) {
+    $npm = Get-Command npm -ErrorAction SilentlyContinue
+    if ($null -eq $npm) {
+        throw 'npm nao encontrado para validar o frontend.'
+    }
+
+    Push-Location $PSScriptRoot
+    try {
+        & $npm.Source test
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Testes do frontend falharam.'
+        }
+        & $npm.Source run build
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Build do frontend falhou.'
+        }
+    }
+    finally {
+        Pop-Location
+    }
+
+    Write-Host 'Testes e build do frontend: OK'
+}
