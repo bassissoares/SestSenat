@@ -243,10 +243,12 @@ def build_outputs(input_path: Path, min_year: int | None = None) -> tuple[dict[s
         totals_by_year[int(fact["year"])] += quantity
 
     generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    publication_policy = f"schema={SCHEMA_VERSION};min_year={min_year or ''}"
+    dataset_version = hashlib.sha256(f"{source_hash};{publication_policy}".encode("utf-8")).hexdigest()[:16]
     manifest = {
         "schemaVersion": SCHEMA_VERSION,
         "module": "formularios-respondidos",
-        "datasetVersion": source_hash[:16],
+        "datasetVersion": dataset_version,
         "generatedAt": generated_at,
         "periodStart": min(f"{fact['year']}-{int(fact['month']):02d}" for fact in facts),
         "periodEnd": max(f"{fact['year']}-{int(fact['month']):02d}" for fact in facts),

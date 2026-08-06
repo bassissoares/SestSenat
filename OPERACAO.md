@@ -10,7 +10,7 @@
 ## Atualizar o snapshot
 
 1. Criar branch a partir de `main`.
-2. Executar `python scripts/import_forms.py --input "C:\caminho\formularios_respondidos.csv" --min-year 2021`.
+2. Executar `python scripts/import_forms.py --input "C:\caminho\formularios_respondidos.csv" --min-year 2022`.
 3. Executar `python scripts/enrich_geography.py`.
 4. Conferir `quality.json` e `unresolved.json`.
 5. Executar `./check.ps1`.
@@ -20,7 +20,7 @@
 A carga substitui integralmente o snapshot anterior; nunca soma o novo CSV ao
 JSON existente. Falha de validação ocorre antes da promoção e preserva a versão
 pública vigente.
-O corte `--min-year 2021` é obrigatório para este módulo. Registros anteriores
+O corte `--min-year 2022` é obrigatório para este módulo. Registros anteriores
 permanecem auditáveis como descartados no manifesto, mas não chegam ao painel.
 
 ## Rollback

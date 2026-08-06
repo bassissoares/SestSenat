@@ -21,7 +21,7 @@
   anterior somente depois de todas as validações;
 - anos, meses, formulários, conselhos, unidades e responsáveis devem ser
   descobertos nos dados, sem listas ou períodos fixos no código;
-- o mesmo contrato deve aceitar o histórico completo desde 2021 e anos futuros;
+- o mesmo contrato deve aceitar o histórico completo desde 2022 e anos futuros;
 - a ordem das dez colunas permanece fixa enquanto o arquivo não tiver cabeçalho;
 - o pipeline pode aceitar cabeçalho opcional, desde que valide exatamente os
   nomes canônicos antes de processar;
@@ -121,11 +121,10 @@ ordem fixa:
 
 ### Baseline do snapshot
 
-- 6.759 agrupamentos publicados;
-- 1.271.468 formulários respondidos;
-- corte temporal publicado: 2021-01 a 2026-08;
-- 18 agrupamentos anteriores a 2021 descartados por decisão funcional;
-- 447 em 2021;
+- 6.740 agrupamentos publicados;
+- 1.271.021 formulários respondidos;
+- corte temporal publicado: 2022-02 a 2026-08;
+- 37 agrupamentos anteriores a 2022 descartados por decisão funcional;
 - 117.303 em 2022;
 - 296.403 em 2023;
 - 349.245 em 2024;
@@ -142,7 +141,7 @@ ordem fixa:
 
 Esse baseline serve para reconciliar o arquivo atual, mas não pode ser usado
 como limite fixo. Novas cargas podem adicionar anos, meses, dimensões e volume.
-O corte mínimo de 2021 deve ser aplicado explicitamente pelo pipeline e auditado
+O corte mínimo de 2022 deve ser aplicado explicitamente pelo pipeline e auditado
 em `discardedRows` e `minimumPublishedYear` no manifesto.
 
 ### Agregação temporal

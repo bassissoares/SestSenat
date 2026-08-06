@@ -85,6 +85,7 @@ class ImportFormsTests(unittest.TestCase):
             self.assertEqual(result.discarded_rows, 1)
             self.assertEqual(manifest["discardedRows"], 1)
             self.assertEqual(manifest["minimumPublishedYear"], 2021)
+            self.assertNotEqual(manifest["datasetVersion"], manifest["sourceSha256"][:16])
             self.assertEqual(manifest["periodStart"], "2026-02")
 
     def test_rejects_invalid_month_without_replacing_previous_output(self):
