@@ -147,6 +147,15 @@ como limite fixo. Novas cargas podem adicionar anos, meses, dimensões e volume.
 - agrupamentos sem detalhe geográfico permanecem nos totais e aparecem como
   `Localização não identificada`.
 
+### Tipo de unidade
+
+- o tipo é o prefixo alfabético de `unidade_resumida` imediatamente anterior ao número;
+- prefixos compostos, como `DN` e `CN`, constituem um único tipo;
+- unidade sem o padrão prefixo + número recebe `Não identificado`;
+- o tipo integra fatos, dimensões, filtros, ranking e codificação de cores do mapa;
+- quando uma cidade possuir mais de um tipo, a bolha usa a cor do tipo com maior
+  quantidade de formulários respondidos e o tooltip apresenta toda a composição.
+
 ### Terminologia
 
 O único fato disponível é `quantidade de formulários respondidos`. A interface

@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 HEADERS = (
     "ano",
     "mes",
@@ -40,6 +40,7 @@ UNIT_PATTERN = re.compile(
 )
 CITY_PATTERN = re.compile(r"-\s*(?P<city>.+?)/(?P<state>[A-Z]{2})$")
 CITY_WITHOUT_STATE_PATTERN = re.compile(r"-\s*(?P<city>[^-/]+)$")
+UNIT_TYPE_PATTERN = re.compile(r"^(?P<type>[A-Za-z]+)\s+\d+\b")
 
 
 class ImportValidationError(ValueError):
@@ -115,6 +116,12 @@ def parse_unit(detail: str) -> dict[str, object | None]:
         "state": city_match.group("state") if city_match else groups["state"],
         "geoStatus": "city-detected" if city else "city-missing",
     }
+
+
+def parse_unit_type(unit_summary: str) -> str:
+    """Extrai o tipo operacional que antecede o número da unidade."""
+    match = UNIT_TYPE_PATTERN.match(normalized_text(unit_summary))
+    return match.group("type").upper() if match else "Não identificado"
 
 
 def read_rows(input_path: Path) -> tuple[list[list[str]], bool]:
@@ -203,6 +210,7 @@ def transform_rows(rows: Iterable[list[str]]) -> tuple[list[dict[str, object]], 
                 "formName": form_name,
                 "council": council,
                 "unitSummary": unit_summary,
+                "unitType": parse_unit_type(unit_summary),
                 **unit,
                 "responsibleName": responsible_name,
                 "quantity": quantity,
@@ -256,6 +264,7 @@ def build_outputs(input_path: Path) -> tuple[dict[str, object], ImportResult]:
         ],
         "councils": unique_sorted(facts, "council"),
         "units": unique_sorted(facts, "unitSummary"),
+        "unitTypes": unique_sorted(facts, "unitType"),
         "responsibles": unique_sorted(facts, "responsibleName"),
     }
     quality = {

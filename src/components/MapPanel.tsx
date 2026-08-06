@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { CircleMarker, GeoJSON, MapContainer, Popup, TileLayer } from "react-leaflet";
+import { CircleMarker, GeoJSON, MapContainer, TileLayer, Tooltip } from "react-leaflet";
 import type { PathOptions } from "leaflet";
 
 import { loadGeography } from "../data/loadGeography";
 import { useFilters } from "../state/FilterContext";
 import type { GeographyData, StateFeatureProperties } from "../types/geography";
 
-type CityAggregate = { city: string; filterCity: string; state: string; quantity: number; units: number; responsibles: number; latitude: number; longitude: number };
+type UnitTypeTotal = { type: string; quantity: number };
+type CityAggregate = { city: string; filterCity: string; state: string; quantity: number; units: number; responsibles: number; unitTypes: UnitTypeTotal[]; dominantType: string; latitude: number; longitude: number };
+
+const unitTypeColors: Record<string, string> = { A: "#ffd500", B: "#20aaee", C: "#068e3a", D: "#6f42c1", DN: "#f28c28", CN: "#e94f64", "Não identificado": "#8796a5" };
+const colorForType = (type: string) => unitTypeColors[type] ?? "#8796a5";
 
 const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
@@ -31,20 +35,22 @@ export function MapPanel() {
   const cities = useMemo<CityAggregate[]>(() => {
     if (!geography) return [];
     const points = new Map(geography.cities.map((city) => [`${city.normalizedCity}|${city.state}`, city]));
-    const groups = new Map<string, { filterCity: string; quantity: number; units: Set<string>; responsibles: Set<string> }>();
+    const groups = new Map<string, { filterCity: string; quantity: number; units: Set<string>; responsibles: Set<string>; unitTypes: Map<string, number> }>();
     filteredFacts.forEach((fact) => {
       if (!fact.city || !fact.state) return;
       const key = `${normalize(fact.city)}|${fact.state}`;
-      const group = groups.get(key) ?? { filterCity: fact.city, quantity: 0, units: new Set(), responsibles: new Set() };
+      const group = groups.get(key) ?? { filterCity: fact.city, quantity: 0, units: new Set(), responsibles: new Set(), unitTypes: new Map() };
       group.quantity += fact.quantity;
       group.units.add(fact.unitSummary);
       group.responsibles.add(fact.responsibleName);
+      group.unitTypes.set(fact.unitType, (group.unitTypes.get(fact.unitType) ?? 0) + fact.quantity);
       groups.set(key, group);
     });
     return [...groups.entries()].flatMap(([key, group]) => {
       const point = points.get(key);
       if (!point) return [];
-      return [{ city: group.filterCity, filterCity: group.filterCity, state: point.state, quantity: group.quantity, units: group.units.size, responsibles: group.responsibles.size, latitude: point.latitude, longitude: point.longitude }];
+      const unitTypes = [...group.unitTypes.entries()].map(([type, quantity]) => ({ type, quantity })).sort((a, b) => b.quantity - a.quantity);
+      return [{ city: group.filterCity, filterCity: group.filterCity, state: point.state, quantity: group.quantity, units: group.units.size, responsibles: group.responsibles.size, unitTypes, dominantType: unitTypes[0]?.type ?? "Não identificado", latitude: point.latitude, longitude: point.longitude }];
     });
   }, [filteredFacts, geography]);
   const maxCity = Math.max(...cities.map((city) => city.quantity), 1);
@@ -70,12 +76,12 @@ export function MapPanel() {
               if (state) layer.on({ click: () => drillTo({ state: [state] }) });
             }} />
             {cities.map((city) => (
-              <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity))} pathOptions={{ color: "#003770", fillColor: "#ffd500", fillOpacity: .82, weight: 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.filterCity] }) }}>
-                <Popup><strong>{city.city}/{city.state}</strong><br />{city.quantity.toLocaleString("pt-BR")} respondidos<br />{city.units} unidades · {city.responsibles} responsáveis</Popup>
+              <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity))} pathOptions={{ color: "#003770", fillColor: colorForType(city.dominantType), fillOpacity: .86, weight: 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.filterCity] }) }}>
+                <Tooltip sticky direction="top" opacity={.96} className="map-tooltip"><strong>{city.city}/{city.state}</strong><br /><span>Tipo predominante: <b>{city.dominantType}</b></span><br />{city.quantity.toLocaleString("pt-BR")} respondidos<br />{city.units} unidades · {city.responsibles} responsáveis<br /><span>Composição: {city.unitTypes.map((item) => `${item.type} ${item.quantity.toLocaleString("pt-BR")}`).join(" · ")}</span></Tooltip>
               </CircleMarker>
             ))}
           </MapContainer>
-          <div className="map-legend"><span><i className="legend-city" /> Cidade</span><span><i className="legend-state" /> Volume por UF</span><span>{cities.length} cidades localizadas</span></div>
+          <div className="map-legend"><span><i className="legend-state" /> Volume por UF</span>{Object.entries(unitTypeColors).map(([type, color]) => <span key={type}><i className="legend-city" style={{ backgroundColor: color }} /> Tipo {type}</span>)}<span>{cities.length} cidades localizadas</span></div>
           <details className="map-alternative">
             <summary>Consultar dados do mapa em lista</summary>
             <ul>{cities.slice().sort((a, b) => b.quantity - a.quantity).map((city) => <li key={`${city.city}-list`}><button type="button" onClick={() => drillTo({ state: [city.state], city: [city.filterCity] })}>{city.city}/{city.state}: {city.quantity.toLocaleString("pt-BR")}</button></li>)}</ul>

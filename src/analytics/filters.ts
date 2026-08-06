@@ -7,6 +7,7 @@ export const filterLabels: Record<FilterKey, string> = {
   council: "Conselho",
   state: "UF",
   city: "Cidade",
+  unitType: "Tipo de unidade",
   unitSummary: "Unidade",
   responsibleName: "Responsável",
 };

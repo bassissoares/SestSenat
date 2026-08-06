@@ -253,6 +253,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - barras 100% empilhadas para proporção por formulário e território;
 - ranking visual horizontal com participação acumulada;
 - treemap para composição dos formulários respondidos;
+- heatmap temporal alternável por tipo de unidade, unidade, conselho, cidade,
+  formulário e responsável;
 - alternância entre quantidade absoluta e participação percentual;
 - destaque visual e animações curtas sem prejudicar leitura;
 - tooltips ricos e acessíveis;
@@ -263,6 +265,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - soma das proporções fecha em 100% no contexto selecionado;
 - quantidade e percentual usam o mesmo denominador filtrado;
 - gráficos suportam drill-down e drill-up definidos;
+- célula do heatmap aplica simultaneamente período e agrupamento ao contexto;
 - rótulos continuam legíveis em telas menores;
 - não chamar respostas de envios sem definição formal adicional.
 
@@ -282,6 +285,8 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 ### Escopo
 
 - ranking nominal de responsáveis;
+- unidade vinculada no ranking nominal de responsáveis;
+- ranking e filtro por tipo de unidade derivado do prefixo antes do número;
 - ranking de unidades, conselhos, cidades e formulários;
 - posição, quantidade, participação e evolução no período;
 - pesquisa textual, ordenação, paginação e colunas configuráveis;
@@ -297,10 +302,12 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - tabela não renderiza milhares de linhas simultaneamente;
 - interação com linhas mantém contexto e breadcrumb;
 - exportação corresponde exatamente ao filtro visível.
+- bolhas do mapa usam cores por tipo predominante e exibem tooltip analítico no hover.
 
 ### Evidências
 
-- rankings alternáveis de responsáveis, unidades, conselhos, cidades e formulários;
+- rankings alternáveis de responsáveis, tipos de unidade, unidades, conselhos, cidades e formulários;
+- responsáveis apresentam unidades vinculadas, preservando vínculos múltiplos;
 - posição, quantidade, participação e evolução entre primeiro e último ano;
 - pesquisa, ordenação e paginação de dez registros;
 - ação de linha integrada ao filtro global e breadcrumb;

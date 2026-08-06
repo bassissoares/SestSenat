@@ -2,7 +2,7 @@ import { filterLabels } from "../analytics/filters";
 import { useFilters } from "../state/FilterContext";
 import type { FilterKey } from "../types/dashboard";
 
-const filterKeys: FilterKey[] = ["year", "month", "formId", "council", "state", "city", "unitSummary", "responsibleName"];
+const filterKeys: FilterKey[] = ["year", "month", "formId", "council", "state", "city", "unitType", "unitSummary", "responsibleName"];
 
 function optionLabel(key: FilterKey, value: string): string {
   if (key === "month") return new Intl.DateTimeFormat("pt-BR", { month: "long", timeZone: "UTC" }).format(new Date(`2024-${value.padStart(2, "0")}-01T00:00:00Z`));

@@ -5,6 +5,7 @@ export type Fact = {
   formName: string;
   council: string;
   unitSummary: string;
+  unitType: string;
   unitId: number | null;
   unitName: string | null;
   unitStatus: string | null;
@@ -33,6 +34,7 @@ export type Dimensions = {
   forms: Array<{ id: number; name: string }>;
   councils: string[];
   units: string[];
+  unitTypes: string[];
   responsibles: string[];
 };
 
@@ -42,5 +44,5 @@ export type DashboardData = {
   dimensions: Dimensions;
 };
 
-export type FilterKey = "year" | "month" | "formId" | "council" | "state" | "city" | "unitSummary" | "responsibleName";
+export type FilterKey = "year" | "month" | "formId" | "council" | "state" | "city" | "unitType" | "unitSummary" | "responsibleName";
 export type FilterState = Partial<Record<FilterKey, string[]>>;

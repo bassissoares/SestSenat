@@ -54,6 +54,18 @@ class ImportFormsTests(unittest.TestCase):
             facts = json.loads((root / "public/facts.json").read_text(encoding="utf-8"))
             self.assertNotIn("responsibleId", facts[0])
             self.assertEqual(facts[0]["city"], "PALMAS")
+            self.assertEqual(facts[0]["unitType"], "B")
+            dimensions = json.loads((root / "public/dimensions.json").read_text(encoding="utf-8"))
+            self.assertEqual(dimensions["unitTypes"], ["B"])
+
+    def test_marks_unit_without_number_as_unidentified_type(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            row = VALID_ROWS[0].copy()
+            row[5] = "COPA"
+            import_snapshot(self.write_csv(root, [row]), root / "public")
+            facts = json.loads((root / "public/facts.json").read_text(encoding="utf-8"))
+            self.assertEqual(facts[0]["unitType"], "Não identificado")
 
     def test_accepts_canonical_header(self):
         with tempfile.TemporaryDirectory() as temp:
