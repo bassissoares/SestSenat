@@ -1,0 +1,3 @@
+export type ResponseManifest = { datasetVersion:string; generatedAt:string; periodStart:string; periodEnd:string; publishedRows:number; totalSelections:number; invalidAgeQuantity:number; warnings:number };
+export type ResponseDimensions = { forms:Array<{id:number;name:string}>; councils:string[]; units:Array<{summary:string;type:string;city:string|null;state:string|null}>; responsibles:string[]; sexes:string[]; ageBands:string[]; ageQualities:string[]; questions:Array<{id:number;formId:number;label:string;type:string}>; questionGroups:Array<{id:string;label:string}>; options:Array<{groupId:string;label:string}> };
+export type ResponseData = { manifest:ResponseManifest; dimensions:ResponseDimensions; facts:number[][] };

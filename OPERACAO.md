@@ -28,3 +28,7 @@ permanecem auditáveis como descartados no manifesto, mas não chegam ao painel.
 Reverter em nova branch o commit inválido, executar `./check.ps1`, abrir PR e
 publicar novamente pelo workflow. Em emergência, reaplicar o último commit
 aprovado e disparar manualmente `Checks e GitHub Pages`. Não editar o artefato.
+
+## Atualizar respostas dos formulários
+
+Executar `python scripts/import_responses.py --input <respostas.csv> --catalog <catalogo.xlsx>`, revisar manifesto e qualidade, e então executar `./check.ps1`.

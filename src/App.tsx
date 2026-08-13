@@ -4,12 +4,15 @@ import { FilterBar } from "./components/FilterBar";
 import { filterLabels } from "./analytics/filters";
 import { FilterProvider, useFilters } from "./state/FilterContext";
 import { loadDashboardData } from "./data/loadDashboardData";
+import { loadResponsesData } from "./data/loadResponsesData";
 import type { DashboardData } from "./types/dashboard";
+import type { ResponseData } from "./types/responses";
 
 const packages = ["Visão geral", "Mapa por cidade", "Proporções", "Rankings"];
 const MapPanel = lazy(() => import("./components/MapPanel").then((module) => ({ default: module.MapPanel })));
 const AnalyticsPanel = lazy(() => import("./components/AnalyticsPanel").then((module) => ({ default: module.AnalyticsPanel })));
 const RankingPanel = lazy(() => import("./components/RankingPanel").then((module) => ({ default: module.RankingPanel })));
+const ResponsesDashboard = lazy(() => import("./components/ResponsesDashboard").then((module) => ({ default: module.ResponsesDashboard })));
 const glossary = [
   ["Formulários respondidos", "Quantidade registrada no InspectApp; não representa pessoas, atendimentos ou formulários enviados."],
   ["Participação", "Percentual do agrupamento sobre o total do recorte filtrado."],
@@ -59,6 +62,8 @@ function ErrorState({ message }: { message: string }) {
 
 export function App() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [responses, setResponses] = useState<ResponseData | null>(null);
+  const [module, setModule] = useState<"forms" | "responses">("forms");
   const [error, setError] = useState<string | null>(null);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
   const loadedAt = data ? new Date(data.manifest.generatedAt) : null;
@@ -73,6 +78,7 @@ export function App() {
       });
     return () => { active = false; };
   }, []);
+  useEffect(() => { loadResponsesData().then(setResponses).catch((cause: unknown) => setError(cause instanceof Error ? cause.message : "Erro nas respostas.")); }, []);
   useEffect(() => { if (!glossaryOpen) return; const close = (event: KeyboardEvent) => event.key === "Escape" && setGlossaryOpen(false); window.addEventListener("keydown", close); return () => window.removeEventListener("keydown", close); }, [glossaryOpen]);
 
   return (
@@ -89,9 +95,13 @@ export function App() {
       </header>
 
       <nav className="module-nav" aria-label="Navegação do painel">
+        <button className={module === "forms" ? "module-active" : ""} type="button" onClick={() => setModule("forms")}>Formulários respondidos</button>
+        <button className={module === "responses" ? "module-active" : ""} type="button" onClick={() => setModule("responses")}>Análise das respostas</button>
+        {module === "forms" && <>
         {packages.map((item, index) => (
           <a key={item} href={`#secao-${index}`} aria-current={index === 0 ? "page" : undefined}>{item}</a>
         ))}
+        </>}
         <button className="glossary-trigger" type="button" onClick={() => setGlossaryOpen(true)}>Glossário</button>
       </nav>
 
@@ -99,16 +109,16 @@ export function App() {
         <section className="hero" id="secao-0">
           <div>
             <p className="eyebrow">PANORAMA NACIONAL</p>
-            <h1>Formulários respondidos</h1>
-            <p className="hero-copy">Visão integrada por período, território, formulário, unidade e responsável.</p>
+            <h1>{module === "forms" ? "Formulários respondidos" : "Análise das respostas"}</h1>
+            <p className="hero-copy">{module === "forms" ? "Visão integrada por período, território, formulário, unidade e responsável." : "Perfil demográfico e distribuição das respostas por questão, opção e território."}</p>
           </div>
           <div className="period-pill" aria-label="Período disponível na fonte de dados">
             <span>Dados disponíveis</span>
-            <strong>{data ? `${data.manifest.periodStart} a ${data.manifest.periodEnd}` : "Todos os anos e meses"}</strong>
+            <strong>{module === "forms" ? (data ? `${data.manifest.periodStart} a ${data.manifest.periodEnd}` : "Todos os anos e meses") : (responses ? `${responses.manifest.periodStart} a ${responses.manifest.periodEnd}` : "Carregando")}</strong>
           </div>
         </section>
 
-        {error ? <ErrorState message={error} /> : !data ? <LoadingState /> : (
+        {error ? <ErrorState message={error} /> : module === "responses" ? (!responses ? <LoadingState /> : <ResponsesDashboard data={responses} />) : !data ? <LoadingState /> : (
           <FilterProvider facts={data.facts} dimensions={data.dimensions}>
             <Dashboard />
           </FilterProvider>

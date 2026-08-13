@@ -182,3 +182,17 @@ em `discardedRows` e `minimumPublishedYear` no manifesto.
 O único fato disponível é `quantidade de formulários respondidos`. A interface
 não deve chamar esse valor de `enviados`, `concluídos`, `atendimentos` ou
 `pessoas atendidas` sem novo dado ou definição formal que sustente o termo.
+
+## Contrato MOD-02 — Respostas dos formulários
+
+Fontes: `dados_respostas_formularios_2026.csv` e catálogo `tipo_Qestoes_sest_Senat.xlsx`.
+
+- as nove primeiras colunas reutilizam as dimensões do MOD-01;
+- sexo e faixa etária são dimensões transversais;
+- idade é calculada pelo ano do fato e classificada como válida, não informada ou inválida;
+- questão agregada usa o rótulo normalizado; quando não houver equivalência, usa a própria questão;
+- opções do catálogo são lidas do JSON estruturado, sem separação ingênua por vírgulas;
+- a soma representa seleções/respostas às questões e não pessoas ou formulários;
+- o navegador recebe índices dimensionais e fatos compactos, nunca os arquivos brutos.
+
+Baseline atual: 81.526 agrupamentos, 624.859 seleções/respostas, junho a agosto de 2026, 63 questões originais e 14 questões agregadas.

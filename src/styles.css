@@ -83,6 +83,9 @@ button, a { font: inherit; }
   font-weight: 700;
 }
 .module-nav a[aria-current="page"] { color: #fff; background: var(--brand-blue); }
+.module-nav > button { padding: 9px 13px; color: var(--brand-navy); background: #edf4f8; border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap; font-weight: 700; }
+.module-nav > button.module-active { color: #fff; background: var(--brand-blue); }
+.response-kpis { grid-template-columns: repeat(4, 1fr); }
 .glossary-trigger { margin-left: auto; padding: 8px 13px; color: var(--brand-navy); background: #fff9cf; border: 1px solid #e7ca32; border-radius: 999px; cursor: pointer; white-space: nowrap; font-size: 12px; font-weight: 700; }
 
 .dashboard-main { width: min(1500px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 48px; }

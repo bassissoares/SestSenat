@@ -148,6 +148,15 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - comando: `python scripts/import_forms.py --input <arquivo.csv> --min-year 2022`;
 - checks: `./check.ps1` aprovado.
 
+## [PKG-RES-01] Análise coordenada das respostas
+
+- Status: `EM HOMOLOGAÇÃO`.
+- Fontes: `dados_respostas_formularios_2026.csv` e `tipo_Qestoes_sest_Senat.xlsx`.
+- Entrega: pipeline compacto, dimensões de sexo/faixa etária/qualidade, questões agregadas, filtros coordenados, gráficos e tabela analítica.
+- Regra de fallback: questão sem equivalência utiliza a própria questão como agregada.
+- Baseline: 81.526 agrupamentos, 624.859 seleções/respostas, 63 questões originais e 14 agregadas.
+- Metas e aceite: `METAS_RESPOSTAS_FORMULARIOS.md`.
+
 ## [PKG-02] Design system SEST SENAT e shell analítico
 
 - Status: `CONCLUÍDO`.

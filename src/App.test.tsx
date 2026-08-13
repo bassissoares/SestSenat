@@ -17,7 +17,15 @@ describe("App shell", () => {
       { type: "FeatureCollection", features: [] },
     ];
     let call = 0;
-    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => responses[call++] })));
+    vi.stubGlobal("fetch", vi.fn(async (input: string | URL | Request) => {
+      const url = String(input);
+      if (url.includes("respostas-formularios")) {
+        if (url.endsWith("manifest.json")) return { ok: true, json: async () => ({ datasetVersion: "r1", generatedAt: "2026-08-06T17:32:10Z", periodStart: "2026-06", periodEnd: "2026-08", publishedRows: 0, totalSelections: 0, invalidAgeQuantity: 0, warnings: 0 }) };
+        if (url.endsWith("dimensions.json")) return { ok: true, json: async () => ({ forms: [], councils: [], units: [], responsibles: [], sexes: [], ageBands: [], ageQualities: [], questions: [], questionGroups: [], options: [] }) };
+        return { ok: true, json: async () => [] };
+      }
+      return { ok: true, json: async () => responses[call++] };
+    }));
     render(<App />);
     expect(screen.getByRole("heading", { name: "Formulários respondidos" })).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
