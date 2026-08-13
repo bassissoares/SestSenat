@@ -20,8 +20,9 @@ describe("App shell", () => {
     vi.stubGlobal("fetch", vi.fn(async (input: string | URL | Request) => {
       const url = String(input);
       if (url.includes("respostas-formularios")) {
-        if (url.endsWith("manifest.json")) return { ok: true, json: async () => ({ datasetVersion: "r1", generatedAt: "2026-08-06T17:32:10Z", periodStart: "2026-06", periodEnd: "2026-08", publishedRows: 0, totalSelections: 0, invalidAgeQuantity: 0, warnings: 0 }) };
+        if (url.endsWith("manifest.json")) return { ok: true, json: async () => ({ datasetVersion: "r1", generatedAt: "2026-08-06T17:32:10Z", periodStart: "2026-06", periodEnd: "2026-08", publishedRows: 0, totalSelections: 0, totalAnsweredForms: 0, denominatorGroups: 0, missingDenominatorGroups: 0, invalidAgeQuantity: 0, warnings: 0, factFiles: [] }) };
         if (url.endsWith("dimensions.json")) return { ok: true, json: async () => ({ forms: [], councils: [], units: [], responsibles: [], sexes: [], ageBands: [], ageQualities: [], questions: [], questionGroups: [], options: [] }) };
+        if (url.endsWith("denominators.json")) return { ok: true, json: async () => [] };
         return { ok: true, json: async () => [] };
       }
       return { ok: true, json: async () => responses[call++] };

@@ -31,4 +31,4 @@ aprovado e disparar manualmente `Checks e GitHub Pages`. Não editar o artefato.
 
 ## Atualizar respostas dos formulários
 
-Executar `python scripts/import_responses.py --input <respostas.csv> --catalog <catalogo.xlsx>`, revisar manifesto e qualidade, e então executar `./check.ps1`.
+Executar `python scripts/import_responses.py --input <respostas.csv> --catalog <catalogo.xlsx> --forms-data public/data/formularios-respondidos/facts.json`, revisar manifesto, denominadores e qualidade, e então executar `./check.ps1`.

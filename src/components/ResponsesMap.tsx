@@ -1,0 +1,12 @@
+import { useEffect, useMemo, useState } from "react";
+import { CircleMarker, GeoJSON, MapContainer, Pane, TileLayer, Tooltip } from "react-leaflet";
+import { loadGeography } from "../data/loadGeography";
+import type { GeographyData } from "../types/geography";
+import type { ResponseDimensions } from "../types/responses";
+const normalize=(value:string)=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+export function ResponsesMap({facts,dimensions,onCity}:{facts:number[][];dimensions:ResponseDimensions;onCity:(city:string)=>void}){
+ const [geo,setGeo]=useState<GeographyData|null>(null); useEffect(()=>{loadGeography().then(setGeo)},[]);
+ const cities=useMemo(()=>{const totals=new Map<string,{city:string;state:string;quantity:number}>();facts.forEach(f=>{const u=dimensions.units[f[4]];if(!u.city||!u.state)return;const key=`${normalize(u.city)}|${u.state}`;const item=totals.get(key)??{city:u.city,state:u.state,quantity:0};item.quantity+=f[12];totals.set(key,item)});if(!geo)return [];const points=new Map(geo.cities.map(c=>[`${c.normalizedCity}|${c.state}`,c]));return [...totals.entries()].flatMap(([key,value])=>{const p=points.get(key);return p?[{...value,latitude:p.latitude,longitude:p.longitude}]:[]})},[facts,dimensions,geo]);
+ const max=Math.max(...cities.map(c=>c.quantity),1); if(!geo)return <div className="map-fallback">Carregando mapa da questão…</div>;
+ return <><MapContainer className="interactive-map response-map" center={[-14.5,-52.5]} zoom={4} minZoom={3} maxZoom={10}><TileLayer attribution="&copy; OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/><Pane name="response-states" style={{zIndex:410}}><GeoJSON data={geo.states} style={{color:"#fff",weight:1,fillColor:"#dceaf3",fillOpacity:.55}}/></Pane><Pane name="response-cities" style={{zIndex:430}}>{cities.map(c=><CircleMarker key={`${c.city}-${c.state}`} center={[c.latitude,c.longitude]} radius={6+18*Math.sqrt(c.quantity/max)} pathOptions={{color:"#003770",fillColor:"#20AAEE",fillOpacity:.85,weight:2}} eventHandlers={{click:()=>onCity(c.city)}}><Tooltip sticky><strong>{c.city}/{c.state}</strong><br/>{c.quantity.toLocaleString("pt-BR")} seleções/respostas</Tooltip></CircleMarker>)}</Pane></MapContainer><div className="map-legend"><span><i className="legend-city"/> Volume da questão por cidade</span><span className="map-city-count">{cities.length} cidades</span></div></>
+}

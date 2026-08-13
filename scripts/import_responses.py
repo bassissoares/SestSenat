@@ -48,7 +48,7 @@ def read_catalog(path: Path):
     workbook.close()
     return catalog, warnings
 
-def import_data(csv_path: Path, catalog_path: Path, output: Path):
+def import_data(csv_path: Path, catalog_path: Path, output: Path, forms_path: Path | None = None):
     catalog, warnings = read_catalog(catalog_path)
     with csv_path.open(encoding="utf-8-sig", newline="") as source: rows=[r for r in csv.reader(source) if any(c.strip() for c in r)]
     if not rows or any(len(r)!=17 for r in rows): raise ValueError("CSV deve possuir exatamente 17 colunas em todas as linhas")
@@ -56,7 +56,7 @@ def import_data(csv_path: Path, catalog_path: Path, output: Path):
     def idx(kind, key, value):
         if key not in indexes[kind]: indexes[kind][key]=len(dims[kind]); dims[kind].append(value)
         return indexes[kind][key]
-    facts=[]; total=0; invalid_age=0; group_labels={}
+    facts=[]; total=0; invalid_age=0; group_labels={}; denominator_keys={}
     for line,r in enumerate(rows,1):
         year,month,form_id,qid,qty=int(r[0]),int(r[1]),int(r[2]),int(r[11]),int(r[16]); total+=qty
         if not 1<=month<=12 or qty<=0: raise ValueError(f"Linha {line}: mês ou quantidade inválida")
@@ -66,15 +66,27 @@ def import_data(csv_path: Path, catalog_path: Path, output: Path):
         group_key=norm(entry["question"]); group_label=group_labels.setdefault(group_key,entry["question"].strip())
         form=idx("forms",form_id,{"id":form_id,"name":r[3].strip()}); council=idx("councils",r[4].strip(),r[4].strip()); unit_i=idx("units",unit["summary"],unit)
         responsible=idx("responsibles",r[8].strip(),r[8].strip()); sex=idx("sexes",r[9].strip(),r[9].strip()); age_i=idx("ageBands",band,band); quality_i=idx("ageQualities",quality,quality)
+        denominator_keys[(year,month,form_id,norm(r[4]),norm(r[5]),norm(r[8]))]=(year,month,form,council,unit_i,responsible)
         question=idx("questions",qid,{"id":qid,"formId":form_id,"label":entry["question"].strip(),"type":entry["type"].strip()}); group=idx("questionGroups",group_key,{"id":group_key,"label":group_label})
         option_label = r[14].strip() if r[14].strip().upper()!="NULL" else ("Sim" if r[15].strip()=="1" else "Não" if r[15].strip()=="0" else "Não informado")
         option=idx("options",(group_key,norm(option_label)),{"groupId":group_key,"label":option_label})
         facts.append([year,month,form,council,unit_i,responsible,sex,age_i,quality_i,question,group,option,qty])
     source_hash=hashlib.sha256(csv_path.read_bytes()+catalog_path.read_bytes()).hexdigest()
-    manifest={"schemaVersion":"1.0.0","module":"respostas-formularios","datasetVersion":source_hash[:16],"generatedAt":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),"periodStart":min(f"{r[0]}-{int(r[1]):02d}" for r in rows),"periodEnd":max(f"{r[0]}-{int(r[1]):02d}" for r in rows),"publishedRows":len(facts),"totalSelections":total,"invalidAgeQuantity":invalid_age,"warnings":len(warnings),"sourceSha256":source_hash}
-    payload={"manifest":manifest,"dimensions":dims,"facts":facts,"quality":{"warnings":warnings}}
+    denominators=[]; missing=[]
+    if forms_path:
+        form_facts=json.loads(forms_path.read_text(encoding="utf-8")); lookup={(f["year"],f["month"],f["formId"],norm(f["council"]),norm(f["unitSummary"]),norm(f["responsibleName"])):f["quantity"] for f in form_facts}
+        for key,indexes_value in denominator_keys.items():
+            if key in lookup: denominators.append([*indexes_value,lookup[key]])
+            else: missing.append(key)
+    partitions={}
+    for fact in facts: partitions.setdefault(f"{fact[0]}-{fact[1]:02d}",[]).append(fact)
+    fact_files=[f"facts-{key}.json" for key in sorted(partitions)]
+    warnings.extend(f"Sem denominador no snapshot de formulários: {key}" for key in missing)
+    manifest={"schemaVersion":"1.1.0","module":"respostas-formularios","datasetVersion":source_hash[:16],"generatedAt":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),"periodStart":min(partitions),"periodEnd":max(partitions),"publishedRows":len(facts),"totalSelections":total,"totalAnsweredForms":sum(x[6] for x in denominators),"denominatorGroups":len(denominators),"missingDenominatorGroups":len(missing),"invalidAgeQuantity":invalid_age,"warnings":len(warnings),"factFiles":fact_files,"sourceSha256":source_hash}
+    payload={"manifest":manifest,"dimensions":dims,"denominators":denominators,"quality":{"warnings":warnings}}
     output.parent.mkdir(parents=True,exist_ok=True); temp=Path(tempfile.mkdtemp(dir=output.parent)); target=temp/output.name; target.mkdir()
     for name,data in payload.items(): (target/f"{name}.json").write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
+    for key,data in partitions.items(): (target/f"facts-{key}.json").write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
     backup=output.with_name(output.name+"-backup");
     if backup.exists(): shutil.rmtree(backup)
     if output.exists(): output.replace(backup)
@@ -82,5 +94,5 @@ def import_data(csv_path: Path, catalog_path: Path, output: Path):
     return manifest
 
 if __name__ == "__main__":
-    parser=argparse.ArgumentParser(); parser.add_argument("--input",type=Path,required=True); parser.add_argument("--catalog",type=Path,required=True); parser.add_argument("--output",type=Path,default=Path("public/data/respostas-formularios")); args=parser.parse_args()
-    print(json.dumps(import_data(args.input,args.catalog,args.output),ensure_ascii=False,indent=2))
+    parser=argparse.ArgumentParser(); parser.add_argument("--input",type=Path,required=True); parser.add_argument("--catalog",type=Path,required=True); parser.add_argument("--forms-data",type=Path,default=Path("public/data/formularios-respondidos/facts.json")); parser.add_argument("--output",type=Path,default=Path("public/data/respostas-formularios")); args=parser.parse_args()
+    print(json.dumps(import_data(args.input,args.catalog,args.output,args.forms_data),ensure_ascii=False,indent=2))

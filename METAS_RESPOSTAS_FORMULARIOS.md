@@ -11,6 +11,11 @@ Disponibilizar uma análise coordenada das respostas, mantendo o padrão visual 
 - [x] Classificar idade como válida, não informada ou inválida.
 - [x] Criar questão agregada; quando não houver equivalência, usar a própria questão.
 - [x] Gerar JSON compacto e compatível com GitHub Pages.
+- [x] Particionar fatos por competência para suportar cargas maiores.
+- [x] Reconciliar denominadores com a base de formulários respondidos.
+- [x] Calcular percentual de opções sobre formulários respondidos.
+- [x] Disponibilizar barras e bolhas para análise das opções.
+- [x] Fixar questão/formulário em mapa por cidade, conselho e unidade.
 - [ ] Homologar filtros, indicadores, gráficos, mapa e tabela com o usuário.
 - [ ] Incorporar ajustes identificados na homologação.
 - [ ] Publicar a versão homologada no GitHub Pages.

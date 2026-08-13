@@ -157,6 +157,15 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - Baseline: 81.526 agrupamentos, 624.859 seleções/respostas, 63 questões originais e 14 agregadas.
 - Metas e aceite: `METAS_RESPOSTAS_FORMULARIOS.md`.
 
+## [PKG-RES-02] Denominadores, alto volume e análise territorial da questão
+
+- Status: `EM HOMOLOGAÇÃO`.
+- Particiona fatos por competência para carregamento escalável.
+- Reconcilia formulários respondidos pelas dimensões operacionais idênticas.
+- Apresenta percentuais, barras e bolhas por opção.
+- Ao analisar uma questão, fixa o contexto e apresenta mapa por cidade, conselho e unidade.
+- Evidência atual: 55.589 formulários respondidos reconciliados em 279 agrupamentos; 9 agrupamentos recentes sem denominador auditados.
+
 ## [PKG-02] Design system SEST SENAT e shell analítico
 
 - Status: `CONCLUÍDO`.

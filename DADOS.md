@@ -194,5 +194,9 @@ Fontes: `dados_respostas_formularios_2026.csv` e catálogo `tipo_Qestoes_sest_Se
 - opções do catálogo são lidas do JSON estruturado, sem separação ingênua por vírgulas;
 - a soma representa seleções/respostas às questões e não pessoas ou formulários;
 - o navegador recebe índices dimensionais e fatos compactos, nunca os arquivos brutos.
+- fatos são particionados por ano/mês e descritos em `factFiles` no manifesto;
+- o denominador de formulários respondidos é relacionado por ano, mês, formulário, conselho, unidade e responsável;
+- combinações ainda ausentes no snapshot de formulários ficam auditadas e não são inventadas;
+- percentuais de opções usam os formulários respondidos do mesmo contexto operacional; em múltipla seleção podem superar 100%.
 
 Baseline atual: 81.526 agrupamentos, 624.859 seleções/respostas, junho a agosto de 2026, 63 questões originais e 14 questões agregadas.
