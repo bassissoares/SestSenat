@@ -20,6 +20,11 @@ Disponibilizar uma análise coordenada das respostas, mantendo o padrão visual 
 - [x] Exibir sexo e faixa etária de todas as opções ao fixar uma questão.
 - [x] Bloquear competências incompletas conforme a periodicidade.
 - [x] Manter filtros visíveis durante a rolagem e removíveis individualmente.
+- [x] Exibir bolhas pareadas por sexo, comparando taxa e volume por opção.
+- [x] Exibir heatmap de opções por faixa etária.
+- [x] Exibir contexto flutuante específico da análise de respostas.
+- [x] Identificar filtros ativos com rótulos legíveis e remoção independente.
+- [x] Gerar leitura textual descritiva e auditável do recorte selecionado.
 - [ ] Homologar filtros, indicadores, gráficos, mapa e tabela com o usuário.
 - [ ] Incorporar ajustes identificados na homologação.
 - [ ] Publicar a versão homologada no GitHub Pages.

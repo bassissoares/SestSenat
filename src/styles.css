@@ -140,7 +140,9 @@ h2 { font-size: 28px; }
 .floating-context dt { color: var(--text-muted); font-size: 8px; font-weight: 700; text-transform: uppercase; }
 .floating-context dd { overflow: hidden; margin: 2px 0 0; font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 .floating-context-filters { max-height: 190px; display: flex; flex-wrap: wrap; gap: 6px; overflow-y: auto; }
-.floating-context-filters span { max-width: 100%; padding: 6px 8px; overflow: hidden; color: var(--brand-navy); background: #e2f0f5; border-radius: 8px; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.floating-context-filters span, .floating-context-filters button { max-width: 100%; padding: 6px 8px; overflow: hidden; color: var(--brand-navy); background: #e2f0f5; border: 0; border-radius: 8px; font: inherit; font-size: 10px; font-weight: 700; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.floating-context-filters button { cursor: pointer; }
+.floating-context-filters button:hover { background: #cce7f2; }
 .floating-context-filters small { margin-right: 4px; color: var(--text-muted); font-size: 8px; text-transform: uppercase; }
 .floating-context-filters em { color: var(--text-muted); font-size: 10px; }
 .floating-context-actions { display: flex; justify-content: flex-end; gap: 7px; margin-top: 11px; }
@@ -214,6 +216,12 @@ h2 { font-size: 28px; }
 .chart-card-heading label span { display: block; margin-bottom: 4px; color: var(--text-muted); font-size: 10px; font-weight: 700; text-transform: uppercase; }
 .chart-card-heading select { min-width: 180px; padding: 7px 9px; color: var(--brand-navy); background: #fff; border: 1px solid var(--border); border-radius: 8px; }
 .heatmap-card .echart { height: 470px; }
+.insight-panel { margin: 16px 0; padding: 24px; color: var(--brand-navy); background: linear-gradient(135deg, #fff 0%, #eef8fc 100%); border: 1px solid var(--border); border-left: 5px solid var(--brand-yellow); border-radius: 16px; box-shadow: var(--shadow-soft); }
+.insight-panel h2 { margin: 2px 0 14px; }
+.insight-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+.insight-grid p { margin: 0; line-height: 1.55; }
+.insight-panel > small { display: block; margin-top: 14px; color: var(--text-muted); }
+.response-floating-context header > b::after { content: " seleções"; display: block; color: var(--text-muted); font-family: var(--font-body); font-size: 8px; font-weight: 600; text-align: right; text-transform: uppercase; }
 .chart-wide { grid-column: 1 / -1; }
 .echart { width: 100%; height: 340px; }
 .period-performance-standalone { margin-top: 14px; }
@@ -278,6 +286,7 @@ footer { display: flex; justify-content: space-between; gap: 20px; padding: 22px
   .panel-heading { align-items: flex-start; flex-direction: column; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .chart-grid { grid-template-columns: 1fr; }
+  .insight-grid { grid-template-columns: 1fr; }
   .chart-wide { grid-column: auto; }
   .echart { height: 310px; }
   .chart-card-heading { align-items: stretch; flex-direction: column; }

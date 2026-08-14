@@ -420,6 +420,26 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - revalidação de JSON/GeoJSON no navegador contra cache obsoleto;
 - publicação e smoke test pendentes ao merge em `main`.
 
+## [PKG-RES-04] Leitura executiva e perfil das opções
+
+- Status: `IMPLEMENTADO — AGUARDANDO HOMOLOGAÇÃO`.
+- Dependência: módulo de respostas e perfis deduplicados.
+
+### Entregas
+
+- bolhas pareadas por sexo: eixo representa percentual dentro do sexo e tamanho representa volume;
+- heatmap de opção por faixa etária;
+- síntese textual determinística do formulário, questão, cobertura, opção líder, faixa etária e conselho;
+- contexto flutuante exclusivo da análise de respostas;
+- filtros ativos com rótulos amigáveis e remoção individual.
+
+### Critérios de aceite
+
+- sexo e idade usam formulários com perfil deduplicado como referência;
+- a leitura textual não atribui causalidade nem desempenho sem meta formal;
+- gráficos e texto respeitam período e filtros coordenados;
+- filtros permanecem visíveis durante a rolagem e podem ser removidos separadamente.
+
 ## Modelo para novos módulos
 
 Cada nova planilha deve originar uma demanda com:
