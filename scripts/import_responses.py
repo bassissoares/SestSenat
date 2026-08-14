@@ -56,7 +56,7 @@ def import_data(csv_path: Path, catalog_path: Path, output: Path, forms_path: Pa
     def idx(kind, key, value):
         if key not in indexes[kind]: indexes[kind][key]=len(dims[kind]); dims[kind].append(value)
         return indexes[kind][key]
-    facts=[]; total=0; invalid_age=0; group_labels={}; denominator_keys={}
+    facts=[]; total=0; invalid_age=0; group_labels={}; denominator_keys={}; profile_candidates={}
     for line,r in enumerate(rows,1):
         year,month,form_id,qid,qty=int(r[0]),int(r[1]),int(r[2]),int(r[11]),int(r[16]); total+=qty
         if not 1<=month<=12 or qty<=0: raise ValueError(f"Linha {line}: mês ou quantidade inválida")
@@ -71,6 +71,9 @@ def import_data(csv_path: Path, catalog_path: Path, output: Path, forms_path: Pa
         option_label = r[14].strip() if r[14].strip().upper()!="NULL" else ("Sim" if r[15].strip()=="1" else "Não" if r[15].strip()=="0" else "Não informado")
         option=idx("options",(group_key,norm(option_label)),{"groupId":group_key,"label":option_label})
         facts.append([year,month,form,council,unit_i,responsible,sex,age_i,quality_i,question,group,option,qty])
+        if "multipla" not in norm(entry["type"]):
+            profile_candidates.setdefault((year,month,form,council,unit_i,responsible,sex,age_i,quality_i),{}).setdefault(question,0)
+            profile_candidates[(year,month,form,council,unit_i,responsible,sex,age_i,quality_i)][question]+=qty
     source_hash=hashlib.sha256(csv_path.read_bytes()+catalog_path.read_bytes()).hexdigest()
     denominators=[]; missing=[]
     if forms_path:
@@ -78,12 +81,17 @@ def import_data(csv_path: Path, catalog_path: Path, output: Path, forms_path: Pa
         for key,indexes_value in denominator_keys.items():
             if key in lookup: denominators.append([*indexes_value,lookup[key]])
             else: missing.append(key)
+    profiles=[]
+    for key, question_totals in profile_candidates.items():
+        quantities=set(question_totals.values())
+        if len(quantities)>1: warnings.append(f"Perfil divergente {key}: {sorted(quantities)}")
+        profiles.append([*key,min(quantities)])
     partitions={}
     for fact in facts: partitions.setdefault(f"{fact[0]}-{fact[1]:02d}",[]).append(fact)
     fact_files=[f"facts-{key}.json" for key in sorted(partitions)]
     warnings.extend(f"Sem denominador no snapshot de formulários: {key}" for key in missing)
-    manifest={"schemaVersion":"1.1.0","module":"respostas-formularios","datasetVersion":source_hash[:16],"generatedAt":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),"periodStart":min(partitions),"periodEnd":max(partitions),"publishedRows":len(facts),"totalSelections":total,"totalAnsweredForms":sum(x[6] for x in denominators),"denominatorGroups":len(denominators),"missingDenominatorGroups":len(missing),"invalidAgeQuantity":invalid_age,"warnings":len(warnings),"factFiles":fact_files,"sourceSha256":source_hash}
-    payload={"manifest":manifest,"dimensions":dims,"denominators":denominators,"quality":{"warnings":warnings}}
+    manifest={"schemaVersion":"1.2.0","module":"respostas-formularios","datasetVersion":source_hash[:16],"generatedAt":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),"periodStart":min(partitions),"periodEnd":max(partitions),"publishedRows":len(facts),"totalSelections":total,"totalProfiledForms":sum(x[9] for x in profiles),"profileGroups":len(profiles),"totalAnsweredForms":sum(x[6] for x in denominators),"denominatorGroups":len(denominators),"missingDenominatorGroups":len(missing),"invalidAgeQuantity":invalid_age,"warnings":len(warnings),"factFiles":fact_files,"sourceSha256":source_hash}
+    payload={"manifest":manifest,"dimensions":dims,"denominators":denominators,"profiles":profiles,"quality":{"warnings":warnings}}
     output.parent.mkdir(parents=True,exist_ok=True); temp=Path(tempfile.mkdtemp(dir=output.parent)); target=temp/output.name; target.mkdir()
     for name,data in payload.items(): (target/f"{name}.json").write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
     for key,data in partitions.items(): (target/f"facts-{key}.json").write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")

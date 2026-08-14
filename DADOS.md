@@ -200,3 +200,14 @@ Fontes: `dados_respostas_formularios_2026.csv` e catálogo `tipo_Qestoes_sest_Se
 - percentuais de opções usam os formulários respondidos do mesmo contexto operacional; em múltipla seleção podem superar 100%.
 
 Baseline atual: 81.526 agrupamentos, 624.859 seleções/respostas, junho a agosto de 2026, 63 questões originais e 14 questões agregadas.
+
+O perfil é materializado separadamente, uma única vez por período, formulário,
+conselho, unidade, responsável, sexo e faixa etária. Perguntas de escolha única
+servem somente para reconciliar essa quantidade e não são somadas entre si.
+O snapshot atual contém 57.046 formulários com perfil. A diferença temporária
+em relação aos 55.589 formulários respondidos reconciliados é aceita como
+defasagem entre horários de extração e deve desaparecer em cargas simultâneas.
+
+O recorte temporal só oferece blocos civis completos e inteiramente presentes
+na fonte. A competência corrente nunca integra a visão inicial nem pode ser
+selecionada antes de seu encerramento.

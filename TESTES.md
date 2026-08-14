@@ -54,6 +54,10 @@
 - alternar entre mensal, bimestral, trimestral, semestral e anual preserva o total filtrado;
 - ano/mês inicial e final formam um intervalo contínuo, inclusive quando cruza anos;
 - abertura inicial termina no último período completo e permite incluir manualmente o período atual;
+- no módulo de respostas, períodos incompletos não podem ser selecionados em nenhuma periodicidade;
+- sexo e faixa etária reconciliam fatos de perfil deduplicados, sem soma entre questões;
+- questão fixada mostra simultaneamente todas as opções cruzadas por sexo e faixa etária;
+- barra de filtros permanece acessível na rolagem e remove chips individualmente sem limpar os demais;
 - período parcial gera alerta no contexto principal, nas análises e no resumo flutuante;
 - glossário abre e fecha por controle acessível, e a data da carga corresponde ao manifesto;
 - série, heatmap, variação dos rankings e curva acumulada usam a mesma periodicidade;

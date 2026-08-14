@@ -17,5 +17,7 @@ class ImportResponsesTests(unittest.TestCase):
             self.assertIn("Questão única",[x["label"] for x in dimensions["questionGroups"]])
             self.assertEqual(result["factFiles"],["facts-2026-06.json"])
             self.assertTrue((output/"facts-2026-06.json").is_file())
+            profiles=json.loads((output/"profiles.json").read_text(encoding="utf-8"))
+            self.assertEqual(sum(row[9] for row in profiles),5)
 
 if __name__=="__main__": unittest.main()

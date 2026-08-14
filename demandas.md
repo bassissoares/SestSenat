@@ -166,6 +166,15 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - Ao analisar uma questão, fixa o contexto e apresenta mapa por cidade, conselho e unidade.
 - Evidência atual: 55.589 formulários respondidos reconciliados em 279 agrupamentos; 9 agrupamentos recentes sem denominador auditados.
 
+## [PKG-RES-03] Perfil deduplicado e períodos completos
+
+- Status: `EM HOMOLOGAÇÃO`.
+- Sexo e faixa etária usam 57.046 formulários com perfil, contados uma única vez.
+- Questão fixada apresenta todas as opções cruzadas com sexo e faixas etárias.
+- Periodicidades oferecem somente blocos civis completos presentes na fonte.
+- Filtros acompanham a rolagem e cada chip pode ser removido isoladamente.
+- A diferença atual entre extrações é informativa e será reconciliada quando os arquivos forem gerados simultaneamente.
+
 ## [PKG-02] Design system SEST SENAT e shell analítico
 
 - Status: `CONCLUÍDO`.

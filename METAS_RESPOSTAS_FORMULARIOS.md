@@ -16,6 +16,10 @@ Disponibilizar uma análise coordenada das respostas, mantendo o padrão visual 
 - [x] Calcular percentual de opções sobre formulários respondidos.
 - [x] Disponibilizar barras e bolhas para análise das opções.
 - [x] Fixar questão/formulário em mapa por cidade, conselho e unidade.
+- [x] Deduplicar formulários com perfil antes das análises de sexo e idade.
+- [x] Exibir sexo e faixa etária de todas as opções ao fixar uma questão.
+- [x] Bloquear competências incompletas conforme a periodicidade.
+- [x] Manter filtros visíveis durante a rolagem e removíveis individualmente.
 - [ ] Homologar filtros, indicadores, gráficos, mapa e tabela com o usuário.
 - [ ] Incorporar ajustes identificados na homologação.
 - [ ] Publicar a versão homologada no GitHub Pages.
