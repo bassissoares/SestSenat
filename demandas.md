@@ -440,6 +440,34 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - gráficos e texto respeitam período e filtros coordenados;
 - filtros permanecem visíveis durante a rolagem e podem ser removidos separadamente.
 
+## [PKG-RES-05] Denominadores específicos por pergunta
+
+- Status: `IMPLEMENTADO — AGUARDANDO HOMOLOGAÇÃO`.
+- Formulário elegível é aquele no qual a questão agregada aparece no recorte.
+- Opções usam a base elegível da pergunta, e filtros demográficos usam perfis elegíveis.
+- Questões de múltipla seleção exibem incidência e média de opções por elegível; não inferem pessoas únicas.
+
+## [PKG-RES-06] Evolução temporal das respostas
+
+- Status: `IMPLEMENTADO — AGUARDANDO HOMOLOGAÇÃO`.
+- Série por período completo com base elegível e indicador proporcional.
+- Último período comparado à média dos períodos anteriores em pontos percentuais.
+- Periodicidade coordenada com os filtros mensal, bimestral, trimestral, semestral e anual.
+
+## [PKG-RES-07] Desempenho territorial e demográfico
+
+- Status: `IMPLEMENTADO — AGUARDANDO HOMOLOGAÇÃO`.
+- Ranking proporcional por conselho com base explícita.
+- Mapa alternável entre volume e percentual sobre formulários elegíveis.
+- Bolhas por sexo e heatmap etário calculados dentro de cada perfil elegível.
+
+## [PKG-RES-08] Leitura executiva avançada
+
+- Status: `IMPLEMENTADO — AGUARDANDO HOMOLOGAÇÃO`.
+- Síntese de elegibilidade, cobertura/incidência, opção líder e tendência temporal.
+- Alerta de idade não informada e ressalva para múltipla seleção.
+- Linguagem descritiva, sem classificar desempenho sem meta formal.
+
 ## Modelo para novos módulos
 
 Cada nova planilha deve originar uma demanda com:

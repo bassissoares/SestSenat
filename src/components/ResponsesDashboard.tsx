@@ -5,33 +5,592 @@ import { ResponsesMap } from "./ResponsesMap";
 import { ResponseProfileAnalysis } from "./ResponseProfileAnalysis";
 import { ResponseFloatingContext } from "./ResponseFloatingContext";
 import type { ResponseData } from "../types/responses";
-type Filters={form?:string;council?:string;unit?:string;responsible?:string;sex?:string;age?:string;quality?:string;group?:string;option?:string;city?:string;start:string;end:string};
-const period=(f:number[])=>`${f[0]}-${String(f[1]).padStart(2,"0")}`;
-type Periodicity=1|2|3|6|12;
-const periodicities:Array<[Periodicity,string]>=[[1,"Mensal"],[2,"Bimestral"],[3,"Trimestral"],[6,"Semestral"],[12,"Anual"]];
-function completeBlocks(facts:number[][],size:Periodicity){const available=new Set(facts.map(period)),now=new Date(),result:Array<{start:string;end:string;label:string}>=[];const years=[...new Set(facts.map(f=>f[0]))].sort();for(const year of years)for(let month=1;month<=12;month+=size){const months=Array.from({length:size},(_,i)=>`${year}-${String(month+i).padStart(2,"0")}`),endMonth=month+size-1,ended=year<now.getFullYear()||(year===now.getFullYear()&&endMonth<now.getMonth()+1);if(ended&&months.every(x=>available.has(x)))result.push({start:months[0],end:months.at(-1)!,label:size===1?months[0]:`${months[0]} a ${months.at(-1)}`})}return result}
-export function ResponsesDashboard({data}:{data:ResponseData}){
- const initialBlocks=completeBlocks(data.facts,1),initialStart=initialBlocks[0]?.start??data.manifest.periodStart,initialEnd=initialBlocks.at(-1)?.end??data.manifest.periodStart;
- const d=data.dimensions,[filters,setFilters]=useState<Filters>({start:initialStart,end:initialEnd}),[search,setSearch]=useState(""),[visual,setVisual]=useState<"bar"|"bubble">("bar"),[periodicity,setPeriodicity]=useState<Periodicity>(1);
- const blocks=useMemo(()=>completeBlocks(data.facts,periodicity),[data.facts,periodicity]);
- const update=(key:keyof Filters,value:string)=>setFilters(current=>({...current,[key]:value||undefined})); const clear=()=>{setPeriodicity(1);setFilters({start:initialStart,end:initialEnd})};
- const operational=(f:number[])=>period(f)>=filters.start&&period(f)<=filters.end&&(!filters.form||String(d.forms[f[2]].id)===filters.form)&&(!filters.council||d.councils[f[3]]===filters.council)&&(!filters.unit||d.units[f[4]].summary===filters.unit)&&(!filters.responsible||d.responsibles[f[5]]===filters.responsible)&&(!filters.city||d.units[f[4]].city===filters.city);
- const filtered=useMemo(()=>data.facts.filter(f=>operational(f)&&(!filters.sex||d.sexes[f[6]]===filters.sex)&&(!filters.age||d.ageBands[f[7]]===filters.age)&&(!filters.quality||d.ageQualities[f[8]]===filters.quality)&&(!filters.group||d.questionGroups[f[10]].id===filters.group)&&(!filters.option||d.options[f[11]].label===filters.option)),[data.facts,d,filters]);
- const profileFiltered=useMemo(()=>data.profiles.filter(f=>operational(f)&&(!filters.sex||d.sexes[f[6]]===filters.sex)&&(!filters.age||d.ageBands[f[7]]===filters.age)&&(!filters.quality||d.ageQualities[f[8]]===filters.quality)),[data.profiles,d,filters]);
- const denominator=useMemo(()=>data.denominators.filter(operational).reduce((v,f)=>v+f[6],0),[data.denominators,filters]);
- const total=filtered.reduce((v,f)=>v+f[12],0),groups=new Set(filtered.map(f=>f[10])).size,questions=new Set(filtered.map(f=>f[9])).size,forms=new Set(filtered.map(f=>f[2])).size;
- const aggregate=(source:number[][],index:number,quantityIndex:number,label:(i:number)=>string)=>{const map=new Map<string,number>();source.forEach(f=>map.set(label(f[index]),(map.get(label(f[index]))??0)+f[quantityIndex]));return [...map].sort((a,b)=>b[1]-a[1])};
- const sex=aggregate(profileFiltered,6,9,i=>d.sexes[i]),ages=aggregate(profileFiltered,7,9,i=>d.ageBands[i]),options=aggregate(filtered,11,12,i=>d.options[i].label).slice(0,20),councils=aggregate(filtered,3,12,i=>d.councils[i]),units=aggregate(filtered,4,12,i=>d.units[i].summary),rows=aggregate(filtered,10,12,i=>d.questionGroups[i].label).filter(([l])=>l.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR")));
- const profiledTotal=profileFiltered.reduce((v,f)=>v+f[9],0);
- const optionProfiles=options.map(([option,value])=>{const optionFacts=filtered.filter(f=>d.options[f[11]].label===option);const bySex=aggregate(optionFacts,6,12,i=>d.sexes[i]);const byAge=aggregate(optionFacts,7,12,i=>d.ageBands[i]);return {option,value,sex:Object.fromEntries(bySex),age:Object.fromEntries(byAge)}});
- const percent=(value:number)=>denominator?value/denominator*100:0;
- const bar=(items:[string,number][],color:string):EChartsCoreOption=>({tooltip:{trigger:"axis",formatter:(p:unknown)=>{const x=(p as Array<{name:string;value:number}>)[0];return `${x.name}<br><b>${x.value.toLocaleString("pt-BR")}</b><br>${percent(x.value).toLocaleString("pt-BR",{maximumFractionDigits:1})}% dos formulários respondidos`}},grid:{left:170,right:35,top:15,bottom:35},xAxis:{type:"value"},yAxis:{type:"category",data:items.map(x=>x[0]).reverse()},series:[{type:"bar",data:items.map(x=>x[1]).reverse(),itemStyle:{color,borderRadius:[0,6,6,0]}}]});
- const bubble:EChartsCoreOption={tooltip:{formatter:(p:unknown)=>{const x=p as {name:string;value:number[]};return `${x.name}<br>${x.value[1].toLocaleString("pt-BR")} respostas<br>${x.value[0].toLocaleString("pt-BR",{maximumFractionDigits:1})}% dos formulários`}},xAxis:{name:"% dos formulários respondidos"},yAxis:{name:"Seleções/respostas"},series:[{type:"scatter",symbolSize:(v:number[])=>Math.max(12,Math.min(70,Math.sqrt(v[1])/2)),data:options.map(([name,value])=>({name,value:[percent(value),value]})),itemStyle:{color:"#20AAEE",opacity:.78}}]};
- const defs:[keyof Filters,string,Array<[string,string]>][]=[["form","Formulário",d.forms.map(x=>[String(x.id),x.name])],["council","Conselho",d.councils.map(x=>[x,x])],["unit","Unidade",d.units.map(x=>[x.summary,x.summary])],["responsible","Responsável",d.responsibles.map(x=>[x,x])],["sex","Sexo",d.sexes.map(x=>[x,x])],["age","Faixa etária",d.ageBands.map(x=>[x,x])],["quality","Qualidade da idade",d.ageQualities.map(x=>[x,x])],["group","Questão agregada",d.questionGroups.map(x=>[x.id,x.label])]];
- const fixed=d.questionGroups.find(x=>x.id===filters.group)?.label;
- const filterLabels:Record<string,string>={form:"Formulário",council:"Conselho",unit:"Unidade",responsible:"Responsável",sex:"Sexo",age:"Faixa etária",quality:"Qualidade da idade",group:"Questão agregada",option:"Opção",city:"Cidade"};
- const displayValue=(key:string,value:string)=>key==="form"?(d.forms.find(x=>String(x.id)===value)?.name??value):key==="group"?(d.questionGroups.find(x=>x.id===value)?.label??value):value;
- const activeItems=Object.entries(filters).filter(([key,value])=>value&&!['start','end'].includes(key)).map(([key,value])=>({key,label:filterLabels[key]??key,value:displayValue(key,String(value))}));
- const selectedForm=d.forms.find(x=>String(x.id)===filters.form)?.name;
- return <><section className="filter-area response-sticky-filters"><div className="filter-summary"><span className="filter-chip filter-chip-active">Análise de respostas</span>{activeItems.map(item=><button key={item.key} className="filter-chip filter-chip-selected" onClick={()=>update(item.key as keyof Filters,"")}>{item.label}: {item.value} ×</button>)}<span className="filter-periodicity">{periodicities.find(x=>x[0]===periodicity)?.[1]} · {filters.start} a {filters.end}</span><button className="filter-action" onClick={clear}>Limpar filtros</button></div><details className="advanced-filters"><summary>Refinar análise</summary><div className="filter-grid"><label><span>Periodicidade</span><select value={periodicity} onChange={e=>{const p=Number(e.target.value) as Periodicity,set=completeBlocks(data.facts,p);setPeriodicity(p);if(set.length)setFilters(current=>({...current,start:set[0].start,end:set.at(-1)!.end}))}}>{periodicities.map(([v,l])=><option key={v} value={v} disabled={!completeBlocks(data.facts,v).length}>{l}</option>)}</select></label><label><span>Período inicial completo</span><select value={filters.start} onChange={e=>update("start",e.target.value)}>{blocks.filter(x=>x.start<=filters.end).map(x=><option key={x.start} value={x.start}>{x.label}</option>)}</select></label><label><span>Período final completo</span><select value={filters.end} onChange={e=>update("end",e.target.value)}>{blocks.filter(x=>x.end>=filters.start).map(x=><option key={x.end} value={x.end}>{x.label}</option>)}</select></label>{defs.map(([key,label,items])=><label key={key}><span>{label}</span><select value={filters[key]??""} onChange={e=>update(key,e.target.value)}><option value="">Todos</option>{items.map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></label>)}</div></details></section><ResponseFloatingContext items={activeItems} period={`${filters.start} a ${filters.end}`} total={total} profiled={profiledTotal} answered={denominator} onRemove={key=>update(key as keyof Filters,"")} onClear={clear}/><div className="context-banner"><strong>{total.toLocaleString("pt-BR")}</strong> seleções/respostas · <strong>{profiledTotal.toLocaleString("pt-BR")}</strong> formulários com perfil · <strong>{denominator.toLocaleString("pt-BR")}</strong> formulários respondidos.</div><ResponseProfileAnalysis facts={filtered} profiles={profileFiltered} dimensions={d} denominator={denominator} formName={selectedForm} questionLabel={fixed}/><section className="analytics-section"><header className="panel-heading"><div><p className="eyebrow">PANORAMA DAS RESPOSTAS</p><h2>{fixed??"Perfil e conteúdo das questões"}</h2></div></header><div className="kpi-grid response-kpis"><article><span>Seleções/respostas</span><strong>{total.toLocaleString("pt-BR")}</strong></article><article><span>Formulários com perfil</span><strong>{profiledTotal.toLocaleString("pt-BR")}</strong></article><article><span>Formulários respondidos</span><strong>{denominator.toLocaleString("pt-BR")}</strong></article><article><span>Questões agregadas</span><strong>{groups}</strong></article></div><div className="chart-grid"><article className="chart-card"><h3>Formulários com perfil por sexo</h3><EChart ariaLabel="Perfil por sexo" option={bar(sex,"#2E72E0")} onSelect={n=>update("sex",n)}/></article><article className="chart-card"><h3>Formulários com perfil por faixa etária</h3><EChart ariaLabel="Perfil por faixa etária" option={bar(ages,"#20AAEE")} onSelect={n=>update("age",n)}/></article><article className="chart-card chart-wide"><div className="chart-card-heading"><div><h3>Opções da questão</h3></div><div className="segmented"><button className={visual==="bar"?"active":""} onClick={()=>setVisual("bar")}>Barras</button><button className={visual==="bubble"?"active":""} onClick={()=>setVisual("bubble")}>Bolhas</button></div></div><EChart ariaLabel="Opções da questão" option={visual==="bar"?bar(options,"#068E3A"):bubble} onSelect={n=>update("option",n)}/></article></div>{fixed&&<div className="table-scroll option-profile-table"><table><thead><tr><th>Opção</th>{d.sexes.map(x=><th key={x}>{x}</th>)}{d.ageBands.map(x=><th key={x}>{x}</th>)}<th>Total</th></tr></thead><tbody>{optionProfiles.map(row=><tr key={row.option}><td>{row.option}</td>{d.sexes.map(x=><td key={x}>{(row.sex[x]??0).toLocaleString("pt-BR")}</td>)}{d.ageBands.map(x=><td key={x}>{(row.age[x]??0).toLocaleString("pt-BR")}</td>)}<td>{row.value.toLocaleString("pt-BR")}</td></tr>)}</tbody></table></div>}</section>{fixed&&<section className="panel"><header className="panel-header"><div><p className="eyebrow">VISÃO TERRITORIAL DA QUESTÃO</p><h2>Mapa por cidade</h2></div></header><ResponsesMap facts={filtered} dimensions={d} onCity={city=>update("city",city)}/><div className="chart-grid"><article className="chart-card"><h3>Por conselho</h3><EChart ariaLabel="Questão por conselho" option={bar(councils,"#003770")} onSelect={n=>update("council",n)}/></article><article className="chart-card"><h3>Por unidade</h3><EChart ariaLabel="Questão por unidade" option={bar(units.slice(0,20),"#2E72E0")} onSelect={n=>update("unit",n)}/></article></div></section>}<section className="ranking-section"><header className="panel-header"><div><p className="eyebrow">QUESTÕES COORDENADAS</p><h2>Tabela de questões agregadas</h2></div></header><div className="table-toolbar"><label><span>Pesquisar questão</span><input value={search} onChange={e=>setSearch(e.target.value)}/></label></div><div className="table-scroll"><table><thead><tr><th>Questão agregada</th><th>Seleções/respostas</th><th>Ação</th></tr></thead><tbody>{rows.map(([label,value])=><tr key={label}><td>{label}</td><td>{value.toLocaleString("pt-BR")}</td><td><button className="row-action" onClick={()=>{const g=d.questionGroups.find(x=>x.label===label);if(g)update("group",g.id)}}>Analisar</button></td></tr>)}</tbody></table></div></section></>
+type Filters = {
+  form?: string;
+  council?: string;
+  unit?: string;
+  responsible?: string;
+  sex?: string;
+  age?: string;
+  quality?: string;
+  group?: string;
+  option?: string;
+  city?: string;
+  start: string;
+  end: string;
+};
+const period = (f: number[]) => `${f[0]}-${String(f[1]).padStart(2, "0")}`;
+type Periodicity = 1 | 2 | 3 | 6 | 12;
+const periodicities: Array<[Periodicity, string]> = [
+  [1, "Mensal"],
+  [2, "Bimestral"],
+  [3, "Trimestral"],
+  [6, "Semestral"],
+  [12, "Anual"],
+];
+function completeBlocks(facts: number[][], size: Periodicity) {
+  const available = new Set(facts.map(period)),
+    now = new Date(),
+    result: Array<{ start: string; end: string; label: string }> = [];
+  const years = [...new Set(facts.map((f) => f[0]))].sort();
+  for (const year of years)
+    for (let month = 1; month <= 12; month += size) {
+      const months = Array.from(
+          { length: size },
+          (_, i) => `${year}-${String(month + i).padStart(2, "0")}`,
+        ),
+        endMonth = month + size - 1,
+        ended =
+          year < now.getFullYear() ||
+          (year === now.getFullYear() && endMonth < now.getMonth() + 1);
+      if (ended && months.every((x) => available.has(x)))
+        result.push({
+          start: months[0],
+          end: months.at(-1)!,
+          label: size === 1 ? months[0] : `${months[0]} a ${months.at(-1)}`,
+        });
+    }
+  return result;
+}
+export function ResponsesDashboard({ data }: { data: ResponseData }) {
+  const initialBlocks = completeBlocks(data.facts, 1),
+    initialStart = initialBlocks[0]?.start ?? data.manifest.periodStart,
+    initialEnd = initialBlocks.at(-1)?.end ?? data.manifest.periodStart;
+  const d = data.dimensions,
+    [filters, setFilters] = useState<Filters>({
+      start: initialStart,
+      end: initialEnd,
+    }),
+    [search, setSearch] = useState(""),
+    [visual, setVisual] = useState<"bar" | "bubble">("bar"),
+    [periodicity, setPeriodicity] = useState<Periodicity>(1);
+  const blocks = useMemo(
+    () => completeBlocks(data.facts, periodicity),
+    [data.facts, periodicity],
+  );
+  const update = (key: keyof Filters, value: string) =>
+    setFilters((current) => ({ ...current, [key]: value || undefined }));
+  const clear = () => {
+    setPeriodicity(1);
+    setFilters({ start: initialStart, end: initialEnd });
+  };
+  const operational = (f: number[]) =>
+    period(f) >= filters.start &&
+    period(f) <= filters.end &&
+    (!filters.form || String(d.forms[f[2]].id) === filters.form) &&
+    (!filters.council || d.councils[f[3]] === filters.council) &&
+    (!filters.unit || d.units[f[4]].summary === filters.unit) &&
+    (!filters.responsible || d.responsibles[f[5]] === filters.responsible) &&
+    (!filters.city || d.units[f[4]].city === filters.city);
+  const filtered = useMemo(
+    () =>
+      data.facts.filter(
+        (f) =>
+          operational(f) &&
+          (!filters.sex || d.sexes[f[6]] === filters.sex) &&
+          (!filters.age || d.ageBands[f[7]] === filters.age) &&
+          (!filters.quality || d.ageQualities[f[8]] === filters.quality) &&
+          (!filters.group || d.questionGroups[f[10]].id === filters.group) &&
+          (!filters.option || d.options[f[11]].label === filters.option),
+      ),
+    [data.facts, d, filters],
+  );
+  const questionScopeFacts = useMemo(
+    () =>
+      data.facts.filter(
+        (f) =>
+          operational(f) &&
+          (!filters.group || d.questionGroups[f[10]].id === filters.group),
+      ),
+    [data.facts, d, filters],
+  );
+  const profileFiltered = useMemo(
+    () =>
+      data.profiles.filter(
+        (f) =>
+          operational(f) &&
+          (!filters.sex || d.sexes[f[6]] === filters.sex) &&
+          (!filters.age || d.ageBands[f[7]] === filters.age) &&
+          (!filters.quality || d.ageQualities[f[8]] === filters.quality),
+      ),
+    [data.profiles, d, filters],
+  );
+  const denominatorRows = useMemo(
+    () => data.denominators.filter(operational),
+    [data.denominators, filters],
+  );
+  const denominator = useMemo(
+    () => denominatorRows.reduce((v, f) => v + f[6], 0),
+    [denominatorRows],
+  );
+  const fixed = d.questionGroups.find((x) => x.id === filters.group)?.label;
+  const total = filtered.reduce((v, f) => v + f[12], 0),
+    groups = new Set(filtered.map((f) => f[10])).size,
+    questions = new Set(filtered.map((f) => f[9])).size,
+    forms = new Set(filtered.map((f) => f[2])).size;
+  const aggregate = (
+    source: number[][],
+    index: number,
+    quantityIndex: number,
+    label: (i: number) => string,
+  ) => {
+    const map = new Map<string, number>();
+    source.forEach((f) =>
+      map.set(
+        label(f[index]),
+        (map.get(label(f[index])) ?? 0) + f[quantityIndex],
+      ),
+    );
+    return [...map].sort((a, b) => b[1] - a[1]);
+  };
+  const eligibleKeys = new Set(
+    questionScopeFacts.map((f) => `${f[0]}|${f[1]}|${f[2]}`),
+  );
+  const isEligible = (f: number[]) =>
+    eligibleKeys.has(`${f[0]}|${f[1]}|${f[2]}`);
+  const analysisProfiles = fixed
+    ? profileFiltered.filter(isEligible)
+    : profileFiltered;
+  const sex = aggregate(analysisProfiles, 6, 9, (i) => d.sexes[i]),
+    ages = aggregate(analysisProfiles, 7, 9, (i) => d.ageBands[i]),
+    options = aggregate(filtered, 11, 12, (i) => d.options[i].label).slice(
+      0,
+      20,
+    ),
+    councils = aggregate(filtered, 3, 12, (i) => d.councils[i]),
+    units = aggregate(filtered, 4, 12, (i) => d.units[i].summary),
+    rows = aggregate(filtered, 10, 12, (i) => d.questionGroups[i].label).filter(
+      ([l]) =>
+        l
+          .toLocaleLowerCase("pt-BR")
+          .includes(search.toLocaleLowerCase("pt-BR")),
+    );
+  const profiledTotal = analysisProfiles.reduce((v, f) => v + f[9], 0);
+  const optionProfiles = options.map(([option, value]) => {
+    const optionFacts = filtered.filter(
+      (f) => d.options[f[11]].label === option,
+    );
+    const bySex = aggregate(optionFacts, 6, 12, (i) => d.sexes[i]);
+    const byAge = aggregate(optionFacts, 7, 12, (i) => d.ageBands[i]);
+    return {
+      option,
+      value,
+      sex: Object.fromEntries(bySex),
+      age: Object.fromEntries(byAge),
+    };
+  });
+  const eligibleDenominator = fixed
+    ? denominatorRows
+        .filter(isEligible)
+        .reduce((v, f) => v + f[6], 0)
+    : denominator;
+  const optionBase =
+    filters.sex || filters.age || filters.quality
+      ? profiledTotal
+      : eligibleDenominator;
+  const percent = (value: number) =>
+    optionBase ? (value / optionBase) * 100 : 0;
+  const bar = (
+    items: [string, number][],
+    color: string,
+  ): EChartsCoreOption => ({
+    tooltip: {
+      trigger: "axis",
+      formatter: (p: unknown) => {
+        const x = (p as Array<{ name: string; value: number }>)[0];
+        return `${x.name}<br><b>${x.value.toLocaleString("pt-BR")}</b><br>${percent(x.value).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}% dos formulários respondidos`;
+      },
+    },
+    grid: { left: 170, right: 35, top: 15, bottom: 35 },
+    xAxis: { type: "value" },
+    yAxis: { type: "category", data: items.map((x) => x[0]).reverse() },
+    series: [
+      {
+        type: "bar",
+        data: items.map((x) => x[1]).reverse(),
+        itemStyle: { color, borderRadius: [0, 6, 6, 0] },
+      },
+    ],
+  });
+  const bubble: EChartsCoreOption = {
+    tooltip: {
+      formatter: (p: unknown) => {
+        const x = p as { name: string; value: number[] };
+        return `${x.name}<br>${x.value[1].toLocaleString("pt-BR")} respostas<br>${x.value[0].toLocaleString("pt-BR", { maximumFractionDigits: 1 })}% dos formulários`;
+      },
+    },
+    xAxis: { name: "% dos formulários respondidos" },
+    yAxis: { name: "Seleções/respostas" },
+    series: [
+      {
+        type: "scatter",
+        symbolSize: (v: number[]) =>
+          Math.max(12, Math.min(70, Math.sqrt(v[1]) / 2)),
+        data: options.map(([name, value]) => ({
+          name,
+          value: [percent(value), value],
+        })),
+        itemStyle: { color: "#20AAEE", opacity: 0.78 },
+      },
+    ],
+  };
+  const defs: [keyof Filters, string, Array<[string, string]>][] = [
+    ["form", "Formulário", d.forms.map((x) => [String(x.id), x.name])],
+    ["council", "Conselho", d.councils.map((x) => [x, x])],
+    ["unit", "Unidade", d.units.map((x) => [x.summary, x.summary])],
+    ["responsible", "Responsável", d.responsibles.map((x) => [x, x])],
+    ["sex", "Sexo", d.sexes.map((x) => [x, x])],
+    ["age", "Faixa etária", d.ageBands.map((x) => [x, x])],
+    ["quality", "Qualidade da idade", d.ageQualities.map((x) => [x, x])],
+    ["group", "Questão agregada", d.questionGroups.map((x) => [x.id, x.label])],
+  ];
+  const filterLabels: Record<string, string> = {
+    form: "Formulário",
+    council: "Conselho",
+    unit: "Unidade",
+    responsible: "Responsável",
+    sex: "Sexo",
+    age: "Faixa etária",
+    quality: "Qualidade da idade",
+    group: "Questão agregada",
+    option: "Opção",
+    city: "Cidade",
+  };
+  const displayValue = (key: string, value: string) =>
+    key === "form"
+      ? (d.forms.find((x) => String(x.id) === value)?.name ?? value)
+      : key === "group"
+        ? (d.questionGroups.find((x) => x.id === value)?.label ?? value)
+        : value;
+  const activeItems = Object.entries(filters)
+    .filter(([key, value]) => value && !["start", "end"].includes(key))
+    .map(([key, value]) => ({
+      key,
+      label: filterLabels[key] ?? key,
+      value: displayValue(key, String(value)),
+    }));
+  const selectedForm = d.forms.find((x) => String(x.id) === filters.form)?.name;
+  return (
+    <>
+      <section className="filter-area response-sticky-filters">
+        <div className="filter-summary">
+          <span className="filter-chip filter-chip-active">
+            Análise de respostas
+          </span>
+          {activeItems.map((item) => (
+            <button
+              key={item.key}
+              className="filter-chip filter-chip-selected"
+              onClick={() => update(item.key as keyof Filters, "")}
+            >
+              {item.label}: {item.value} ×
+            </button>
+          ))}
+          <span className="filter-periodicity">
+            {periodicities.find((x) => x[0] === periodicity)?.[1]} ·{" "}
+            {filters.start} a {filters.end}
+          </span>
+          <button className="filter-action" onClick={clear}>
+            Limpar filtros
+          </button>
+        </div>
+        <details className="advanced-filters">
+          <summary>Refinar análise</summary>
+          <div className="filter-grid">
+            <label>
+              <span>Periodicidade</span>
+              <select
+                value={periodicity}
+                onChange={(e) => {
+                  const p = Number(e.target.value) as Periodicity,
+                    set = completeBlocks(data.facts, p);
+                  setPeriodicity(p);
+                  if (set.length)
+                    setFilters((current) => ({
+                      ...current,
+                      start: set[0].start,
+                      end: set.at(-1)!.end,
+                    }));
+                }}
+              >
+                {periodicities.map(([v, l]) => (
+                  <option
+                    key={v}
+                    value={v}
+                    disabled={!completeBlocks(data.facts, v).length}
+                  >
+                    {l}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Período inicial completo</span>
+              <select
+                value={filters.start}
+                onChange={(e) => update("start", e.target.value)}
+              >
+                {blocks
+                  .filter((x) => x.start <= filters.end)
+                  .map((x) => (
+                    <option key={x.start} value={x.start}>
+                      {x.label}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <label>
+              <span>Período final completo</span>
+              <select
+                value={filters.end}
+                onChange={(e) => update("end", e.target.value)}
+              >
+                {blocks
+                  .filter((x) => x.end >= filters.start)
+                  .map((x) => (
+                    <option key={x.end} value={x.end}>
+                      {x.label}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            {defs.map(([key, label, items]) => (
+              <label key={key}>
+                <span>{label}</span>
+                <select
+                  value={filters[key] ?? ""}
+                  onChange={(e) => update(key, e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  {items.map(([v, l]) => (
+                    <option key={v} value={v}>
+                      {l}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ))}
+          </div>
+        </details>
+      </section>
+      <ResponseFloatingContext
+        items={activeItems}
+        period={`${filters.start} a ${filters.end}`}
+        total={total}
+        profiled={profiledTotal}
+        answered={denominator}
+        onRemove={(key) => update(key as keyof Filters, "")}
+        onClear={clear}
+      />
+      <div className="context-banner">
+        <strong>{total.toLocaleString("pt-BR")}</strong> seleções/respostas ·{" "}
+        <strong>{profiledTotal.toLocaleString("pt-BR")}</strong> formulários com
+        perfil · <strong>{denominator.toLocaleString("pt-BR")}</strong>{" "}
+        formulários respondidos.
+      </div>
+      <ResponseProfileAnalysis
+        facts={filtered}
+        questionScopeFacts={questionScopeFacts}
+        profiles={profileFiltered}
+        denominators={denominatorRows}
+        dimensions={d}
+        denominator={denominator}
+        periodicity={periodicity}
+        demographicFiltered={Boolean(
+          filters.sex || filters.age || filters.quality,
+        )}
+        formName={selectedForm}
+        questionLabel={fixed}
+      />
+      <section className="analytics-section">
+        <header className="panel-heading">
+          <div>
+            <p className="eyebrow">PANORAMA DAS RESPOSTAS</p>
+            <h2>{fixed ?? "Perfil e conteúdo das questões"}</h2>
+          </div>
+        </header>
+        <div className="kpi-grid response-kpis">
+          <article>
+            <span>Seleções/respostas</span>
+            <strong>{total.toLocaleString("pt-BR")}</strong>
+          </article>
+          <article>
+            <span>Formulários com perfil</span>
+            <strong>{profiledTotal.toLocaleString("pt-BR")}</strong>
+          </article>
+          <article>
+            <span>Formulários respondidos</span>
+            <strong>{denominator.toLocaleString("pt-BR")}</strong>
+          </article>
+          <article>
+            <span>Questões agregadas</span>
+            <strong>{groups}</strong>
+          </article>
+        </div>
+        <div className="chart-grid">
+          <article className="chart-card">
+            <h3>Formulários com perfil por sexo</h3>
+            <EChart
+              ariaLabel="Perfil por sexo"
+              option={bar(sex, "#2E72E0")}
+              onSelect={(n) => update("sex", n)}
+            />
+          </article>
+          <article className="chart-card">
+            <h3>Formulários com perfil por faixa etária</h3>
+            <EChart
+              ariaLabel="Perfil por faixa etária"
+              option={bar(ages, "#20AAEE")}
+              onSelect={(n) => update("age", n)}
+            />
+          </article>
+          {fixed && <article className="chart-card chart-wide">
+            <div className="chart-card-heading">
+              <div>
+                <h3>Opções da questão</h3>
+              </div>
+              <div className="segmented">
+                <button
+                  className={visual === "bar" ? "active" : ""}
+                  onClick={() => setVisual("bar")}
+                >
+                  Barras
+                </button>
+                <button
+                  className={visual === "bubble" ? "active" : ""}
+                  onClick={() => setVisual("bubble")}
+                >
+                  Bolhas
+                </button>
+              </div>
+            </div>
+            <EChart
+              ariaLabel="Opções da questão"
+              option={visual === "bar" ? bar(options, "#068E3A") : bubble}
+              onSelect={(n) => update("option", n)}
+            />
+          </article>}
+        </div>
+        {fixed && (
+          <div className="table-scroll option-profile-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Opção</th>
+                  {d.sexes.map((x) => (
+                    <th key={x}>{x}</th>
+                  ))}
+                  {d.ageBands.map((x) => (
+                    <th key={x}>{x}</th>
+                  ))}
+                  <th>Total</th>
+                  <th>% da base elegível</th>
+                </tr>
+              </thead>
+              <tbody>
+                {optionProfiles.map((row) => (
+                  <tr key={row.option}>
+                    <td>{row.option}</td>
+                    {d.sexes.map((x) => (
+                      <td key={x}>
+                        {(row.sex[x] ?? 0).toLocaleString("pt-BR")}
+                      </td>
+                    ))}
+                    {d.ageBands.map((x) => (
+                      <td key={x}>
+                        {(row.age[x] ?? 0).toLocaleString("pt-BR")}
+                      </td>
+                    ))}
+                    <td>{row.value.toLocaleString("pt-BR")}</td>
+                    <td>{percent(row.value).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+      {fixed && (
+        <section className="panel">
+          <header className="panel-header">
+            <div>
+              <p className="eyebrow">VISÃO TERRITORIAL DA QUESTÃO</p>
+              <h2>Mapa por cidade</h2>
+            </div>
+          </header>
+          <ResponsesMap
+            facts={filtered}
+            denominators={denominatorRows}
+            eligibleKeys={eligibleKeys}
+            dimensions={d}
+            onCity={(city) => update("city", city)}
+          />
+          <div className="chart-grid">
+            <article className="chart-card">
+              <h3>Por conselho</h3>
+              <EChart
+                ariaLabel="Questão por conselho"
+                option={bar(councils, "#003770")}
+                onSelect={(n) => update("council", n)}
+              />
+            </article>
+            <article className="chart-card">
+              <h3>Por unidade</h3>
+              <EChart
+                ariaLabel="Questão por unidade"
+                option={bar(units.slice(0, 20), "#2E72E0")}
+                onSelect={(n) => update("unit", n)}
+              />
+            </article>
+          </div>
+        </section>
+      )}
+      <section className="ranking-section">
+        <header className="panel-header">
+          <div>
+            <p className="eyebrow">QUESTÕES COORDENADAS</p>
+            <h2>Tabela de questões agregadas</h2>
+          </div>
+        </header>
+        <div className="table-toolbar">
+          <label>
+            <span>Pesquisar questão</span>
+            <input value={search} onChange={(e) => setSearch(e.target.value)} />
+          </label>
+        </div>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Questão agregada</th>
+                <th>Seleções/respostas</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(([label, value]) => (
+                <tr key={label}>
+                  <td>{label}</td>
+                  <td>{value.toLocaleString("pt-BR")}</td>
+                  <td>
+                    <button
+                      className="row-action"
+                      onClick={() => {
+                        const g = d.questionGroups.find(
+                          (x) => x.label === label,
+                        );
+                        if (g) update("group", g.id);
+                      }}
+                    >
+                      Analisar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
+  );
 }

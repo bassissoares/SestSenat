@@ -222,6 +222,7 @@ h2 { font-size: 28px; }
 .insight-grid p { margin: 0; line-height: 1.55; }
 .insight-panel > small { display: block; margin-top: 14px; color: var(--text-muted); }
 .response-floating-context header > b::after { content: " seleções"; display: block; color: var(--text-muted); font-family: var(--font-body); font-size: 8px; font-weight: 600; text-align: right; text-transform: uppercase; }
+.map-metric-toggle { width: max-content; margin: 0 0 10px auto; }
 .chart-wide { grid-column: 1 / -1; }
 .echart { width: 100%; height: 340px; }
 .period-performance-standalone { margin-top: 14px; }

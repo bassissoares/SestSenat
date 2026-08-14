@@ -11,7 +11,7 @@ const dimensions: ResponseDimensions = {
   units: [], responsibles: [],
   sexes: ["Feminino", "Masculino"],
   ageBands: ["25–34", "35–44"],
-  ageQualities: [], questions: [],
+  ageQualities: [], questions: [{ id: 1, formId: 1, label: "Questão teste", type: "Lista simples" }],
   questionGroups: [{ id: "g1", label: "Questão teste" }],
   options: [{ groupId: "g1", label: "Sim" }, { groupId: "g1", label: "Não" }],
 };
@@ -28,12 +28,15 @@ describe("ResponseProfileAnalysis", () => {
       [0, 0, 0, 0, 0, 0, 1, 1, 0, 30],
     ];
 
-    render(<ResponseProfileAnalysis facts={facts} profiles={profiles} dimensions={dimensions} denominator={100} formName="Formulário teste" questionLabel="Questão teste" />);
+    const denominators = [[0, 0, 0, 0, 0, 0, 100]];
+    render(<ResponseProfileAnalysis facts={facts} questionScopeFacts={facts} profiles={profiles} denominators={denominators} dimensions={dimensions} denominator={100} periodicity={1} demographicFiltered={false} formName="Formulário teste" questionLabel="Questão teste" />);
 
     expect(screen.getByText("Síntese automática")).toBeInTheDocument();
     expect(screen.getByText(/cobertura de/)).toHaveTextContent("70%");
     expect(screen.getByText(/a opção líder é/)).toHaveTextContent("Sim");
     expect(screen.getByRole("img", { name: "Comparação das opções por sexo" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Opções por faixa etária" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Evolução percentual da questão" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Percentual da questão por conselho" })).toBeInTheDocument();
   });
 });

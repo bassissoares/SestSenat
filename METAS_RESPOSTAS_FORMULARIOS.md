@@ -25,6 +25,15 @@ Disponibilizar uma análise coordenada das respostas, mantendo o padrão visual 
 - [x] Exibir contexto flutuante específico da análise de respostas.
 - [x] Identificar filtros ativos com rótulos legíveis e remoção independente.
 - [x] Gerar leitura textual descritiva e auditável do recorte selecionado.
+- [x] PKG-RES-05 — calcular formulários elegíveis e percentuais específicos por pergunta.
+- [x] PKG-RES-05 — distinguir seleção única de múltipla seleção e exibir opções por elegível.
+- [x] PKG-RES-06 — apresentar evolução por período completo e variação em pontos percentuais.
+- [x] PKG-RES-06 — comparar o último período com a média dos períodos anteriores.
+- [x] PKG-RES-07 — comparar conselhos por indicador proporcional, sempre com a base exibida.
+- [x] PKG-RES-07 — alternar o mapa da pergunta entre volume e percentual sobre elegíveis.
+- [x] PKG-RES-07 — apresentar percentuais por sexo, faixa etária e opção.
+- [x] PKG-RES-08 — ampliar a leitura executiva com cobertura, tendência e qualidade etária.
+- [ ] PKG-RES-05 a 08 — homologar fórmulas e interpretações com o usuário.
 - [ ] Homologar filtros, indicadores, gráficos, mapa e tabela com o usuário.
 - [ ] Incorporar ajustes identificados na homologação.
 - [ ] Publicar a versão homologada no GitHub Pages.
