@@ -72,13 +72,14 @@ export function MapPanel() {
         <>
           <MapContainer className="interactive-map" center={[-14.5, -52.5]} zoom={4} minZoom={3} maxZoom={10} scrollWheelZoom>
             <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <Pane name="forms-tooltips" style={{ zIndex: 700, pointerEvents: "none" }} />
             <Pane name="state-polygons" style={{ zIndex: 410 }}><GeoJSON key={`states-${filteredFacts.length}`} data={geography.states} style={stateStyle} onEachFeature={(feature, layer) => {
               const state = feature.properties?.state;
               if (state) layer.on({ click: () => drillTo({ state: [state] }) });
             }} /></Pane>
             <Pane name="city-bubbles" style={{ zIndex: 430 }}>{cities.map((city) => (
               <CircleMarker key={`${city.city}-${city.state}`} center={[city.latitude, city.longitude]} radius={Math.max(5, 5 + 18 * Math.sqrt(city.quantity / maxCity)) + (highlightedUnitType === city.dominantType ? 2 : 0)} pathOptions={{ color: "#003770", fillColor: colorForType(city.dominantType), fillOpacity: !highlightedUnitType || highlightedUnitType === city.dominantType ? .9 : .12, opacity: !highlightedUnitType || highlightedUnitType === city.dominantType ? 1 : .18, weight: highlightedUnitType === city.dominantType ? 3 : 2 }} eventHandlers={{ click: () => drillTo({ state: [city.state], city: [city.filterCity] }) }}>
-                <Tooltip sticky direction="top" opacity={.96} className="map-tooltip"><strong>{city.city}/{city.state}</strong><br /><span>Tipo predominante: <b>{city.dominantType}</b></span><br />{city.quantity.toLocaleString("pt-BR")} respondidos<br />{city.units} unidades · {city.responsibles} responsáveis<br /><span>Composição: {city.unitTypes.map((item) => `${item.type} ${item.quantity.toLocaleString("pt-BR")}`).join(" · ")}</span></Tooltip>
+                <Tooltip pane="forms-tooltips" sticky direction="top" opacity={.96} className="map-tooltip"><strong>{city.city}/{city.state}</strong><br /><span>Tipo predominante: <b>{city.dominantType}</b></span><br />{city.quantity.toLocaleString("pt-BR")} respondidos<br />{city.units} unidades · {city.responsibles} responsáveis<br /><span>Composição: {city.unitTypes.map((item) => `${item.type} ${item.quantity.toLocaleString("pt-BR")}`).join(" · ")}</span></Tooltip>
               </CircleMarker>
             ))}</Pane>
           </MapContainer>
