@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.import_forms import HEADERS, ImportValidationError, import_snapshot
+from scripts.import_forms import EXPORT_HEADERS, HEADERS, ImportValidationError, import_snapshot
 
 
 VALID_ROWS = [
@@ -36,12 +36,12 @@ VALID_ROWS = [
 
 
 class ImportFormsTests(unittest.TestCase):
-    def write_csv(self, directory: Path, rows: list[list[str]], header: bool = False) -> Path:
+    def write_csv(self, directory: Path, rows: list[list[str]], header: bool = False, export_header: bool = False) -> Path:
         path = directory / "snapshot.csv"
         with path.open("w", encoding="utf-8-sig", newline="") as target:
             writer = csv.writer(target)
-            if header:
-                writer.writerow(HEADERS)
+            if header or export_header:
+                writer.writerow(EXPORT_HEADERS if export_header else HEADERS)
             writer.writerows(rows)
         return path
 
@@ -74,6 +74,14 @@ class ImportFormsTests(unittest.TestCase):
             manifest = json.loads((root / "public/manifest.json").read_text(encoding="utf-8"))
             self.assertTrue(manifest["hadHeader"])
             self.assertEqual(result.published_rows, 2)
+
+    def test_accepts_inspectapp_export_header(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            result = import_snapshot(self.write_csv(root, VALID_ROWS, export_header=True), root / "public")
+            manifest = json.loads((root / "public/manifest.json").read_text(encoding="utf-8"))
+            self.assertTrue(manifest["hadHeader"])
+            self.assertEqual(result.total, 345)
 
     def test_discards_rows_before_minimum_year_and_audits_manifest(self):
         with tempfile.TemporaryDirectory() as temp:

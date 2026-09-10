@@ -31,6 +31,19 @@ HEADERS = (
     "responsavel_nome",
     "quantidade",
 )
+EXPORT_HEADERS = (
+    "ano",
+    "mes",
+    "formulario_id",
+    "formulario_descricao",
+    "conselho",
+    "unidade",
+    "detalhe_unidade",
+    "responsavel_id",
+    "responsavel_nome",
+    "qtde",
+)
+ACCEPTED_HEADERS = (HEADERS, EXPORT_HEADERS)
 UNIT_PATTERN = re.compile(
     r"^\[IdUnidade=(?P<id>\d+)\],\s*"
     r"\[Unidade=(?P<name>.*?)\],\s*"
@@ -138,10 +151,11 @@ def read_rows(input_path: Path) -> tuple[list[list[str]], bool]:
     if not rows:
         raise ImportValidationError("O CSV está vazio.")
 
-    has_header = tuple(cell.strip() for cell in rows[0]) == HEADERS
+    first_row = tuple(cell.strip() for cell in rows[0])
+    has_header = first_row in ACCEPTED_HEADERS
     if has_header:
         rows = rows[1:]
-    elif any(cell.strip() in HEADERS for cell in rows[0]):
+    elif any(cell.strip() in set().union(*ACCEPTED_HEADERS) for cell in rows[0]):
         raise ImportValidationError(
             "Cabeçalho parcial ou fora de ordem. Use os dez nomes canônicos."
         )

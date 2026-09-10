@@ -98,13 +98,14 @@ Para cada envio devem ser respondidas estas perguntas:
 
 ## Contrato MOD-01 — Formulários respondidos
 
-Fonte atual: `formularios_respondidos.csv`, carga completa processada em 06/08/2026.
+Fonte atual: `formularios_respondidos.csv`, carga completa processada em 10/09/2026.
 
 Granularidade: uma linha por ano, mês, formulário, conselho, unidade e
 responsável, contendo a quantidade agregada de formulários respondidos.
 
-O arquivo recebido não possui cabeçalho. O pipeline deve aplicar e validar esta
-ordem fixa:
+O pipeline aceita arquivo sem cabeçalho, os nomes canônicos abaixo ou o cabeçalho
+equivalente exportado pelo InspectApp (`formulario_descricao`, `unidade`,
+`detalhe_unidade` e `qtde`). Em todos os casos, a ordem fixa é:
 
 | Posição | Campo | Tipo | Regra |
 |---:|---|---|---|
@@ -121,19 +122,19 @@ ordem fixa:
 
 ### Baseline do snapshot
 
-- 6.740 agrupamentos publicados;
-- 1.271.021 formulários respondidos;
-- corte temporal publicado: 2022-02 a 2026-08;
-- 37 agrupamentos anteriores a 2022 descartados por decisão funcional;
+- 6.843 agrupamentos publicados;
+- 1.287.226 formulários respondidos;
+- corte temporal publicado: 2022-02 a 2026-09;
+- nenhum agrupamento anterior a 2022 recebido nesta carga;
 - 117.303 em 2022;
 - 296.403 em 2023;
 - 349.245 em 2024;
-- 335.072 em 2025;
-- 172.998 em 2026;
-- 91 formulários;
+- 335.257 em 2025;
+- 189.018 em 2026;
+- 92 formulários;
 - 19 conselhos;
 - 174 unidades resumidas;
-- 804 responsáveis;
+- 807 responsáveis;
 - 104 agrupamentos com localização ausente ou não interpretada;
 - 165 cidades relacionadas à referência geográfica e nenhuma cidade pendente;
 - nenhuma duplicidade na chave das nove dimensões;

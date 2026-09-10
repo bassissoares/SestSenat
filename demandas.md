@@ -83,17 +83,17 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 ## [MOD-01] Formulários respondidos — visão geral interativa
 
 - Status: `EM ANÁLISE`.
-- Fonte: `formularios_respondidos.csv`, carga completa processada em 06/08/2026.
+- Fonte: `formularios_respondidos.csv`, carga completa processada em 10/09/2026.
 - Objetivo: apresentar, sem filtros obrigatórios, o panorama de formulários
   respondidos e permitir exploração coordenada por tempo, território,
   formulário, unidade e responsável.
 
 ### Baseline da fonte
 
-- período publicado: 2022-02 a 2026-08, com registros anteriores a 2022 descartados;
-- 6.740 agrupamentos;
-- 1.271.021 formulários respondidos;
-- 91 formulários, 19 conselhos, 174 unidades e 804 responsáveis;
+- período publicado: 2022-02 a 2026-09, sem registros anteriores a 2022 na fonte recebida;
+- 6.843 agrupamentos;
+- 1.287.226 formulários respondidos;
+- 92 formulários, 19 conselhos, 174 unidades e 807 responsáveis;
 - nomes de responsáveis autorizados para apresentação pública;
 - localização ausente ou não interpretada em 104 agrupamentos.
 
@@ -125,7 +125,7 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 - manter o último snapshot aprovado quando a nova carga falhar;
 - impedir que o CSV bruto integre a pasta pública ou o artefato do site;
 - preservar nomes autorizados e omitir `responsavel_id` da interface;
-- aplicar corte mínimo de 2022 e reconciliar 1.271.021 respostas publicadas.
+- aplicar corte mínimo de 2022 e reconciliar 1.287.226 respostas publicadas.
 
 ### Critérios de aceite
 
@@ -140,10 +140,10 @@ Este arquivo contém o backlog de entregas. Regras transversais pertencem a
 
 ### Evidências
 
-- 6.740 agrupamentos e 1.271.021 respostas publicadas;
+- 6.843 agrupamentos e 1.287.226 respostas publicadas;
 - reconciliação anual: 117.303 em 2022, 296.403 em 2023,
-  349.245 em 2024, 335.072 em 2025 e 172.998 em 2026;
-- 37 agrupamentos anteriores a 2022 descartados e auditados no manifesto;
+  349.245 em 2024, 335.257 em 2025 e 189.018 em 2026;
+- nenhum agrupamento anterior a 2022 recebido; corte mínimo mantido no manifesto;
 - 104 alertas geográficos preservados no relatório de qualidade;
 - comando: `python scripts/import_forms.py --input <arquivo.csv> --min-year 2022`;
 - checks: `./check.ps1` aprovado.
